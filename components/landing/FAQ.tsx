@@ -3,7 +3,7 @@
 const faqs = [
   {
     q: 'How does the free beta period work?',
-    a: 'Until February 1st, 2026, you get complete access to all Pinflow features at no cost. No credit card required, no hidden fees, no obligations. After the beta period ends, you can choose a plan that fits your needs or cancel anytime.',
+    a: 'Until February 1st, 2026, you get complete access to all Autopin features at no cost. No credit card required, no hidden fees, no obligations. After the beta period ends, you can choose a plan that fits your needs or cancel anytime.',
   },
   {
     q: 'What happens after February 1st, 2026?',
@@ -31,7 +31,7 @@ export default function FAQ() {
           Frequently Asked Questions
         </h2>
         <p className="text-lg text-slate-500">
-          Everything you need to know about Pinflow.
+          Everything you need to know about Autopin.
         </p>
       </div>
 

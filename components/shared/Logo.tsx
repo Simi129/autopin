@@ -36,7 +36,7 @@ export default function Logo({ size = 'md', showText = true, onClick }: LogoProp
       </div>
       {showText && (
         <span className={`${textSizes[size]} font-semibold tracking-tight text-slate-900`}>
-          PINFLOW
+          AUTOPIN
         </span>
       )}
     </div>

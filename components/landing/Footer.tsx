@@ -26,7 +26,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 bg-gradient-to-tr from-rose-500 to-orange-400 rounded-lg"></div>
-              <span className="text-white font-semibold">PINFLOW</span>
+              <span className="text-white font-semibold">AUTOPIN</span>
             </div>
             <p className="text-sm leading-relaxed">
               Automate your Pinterest marketing and grow your business effortlessly.
@@ -74,7 +74,7 @@ export default function Footer() {
         </div>
         
         <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-          <p>© 2026 Pinflow. All rights reserved.</p>
+          <p>© 2026 Autopin. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <a href="/privacy" className="hover:text-white transition-colors">
               Privacy Policy
