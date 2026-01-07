@@ -247,15 +247,27 @@ export default function LandingPage() {
             {[
               {
                 title: 'Product',
-                links: ['Features', 'Pricing', 'FAQ', 'Changelog'],
+                links: [
+                  { name: 'Features', href: '#features' },
+                  { name: 'Pricing', href: '#pricing' },
+                  { name: 'FAQ', href: '#faq' },
+                ],
               },
               {
                 title: 'Company',
-                links: ['About', 'Blog', 'Careers', 'Contact'],
+                links: [
+                  { name: 'About', href: '#' },
+                  { name: 'Blog', href: '#' },
+                  { name: 'Contact', href: 'mailto:support@arjumedia.com' },
+                ],
               },
               {
                 title: 'Legal',
-                links: ['Privacy', 'Terms', 'Security', 'Cookies'],
+                links: [
+                  { name: 'Privacy', href: '/privacy' },
+                  { name: 'Terms', href: '/terms' },
+                  { name: 'Security', href: '#' },
+                ],
               },
             ].map((col, idx) => (
               <div key={idx}>
@@ -263,7 +275,7 @@ export default function LandingPage() {
                 <ul className="space-y-2 text-sm">
                   {col.links.map((link, i) => (
                     <li key={i}>
-                      <a href="#" className="hover:text-white transition-colors">{link}</a>
+                      <a href={link.href} className="hover:text-white transition-colors">{link.name}</a>
                     </li>
                   ))}
                 </ul>
@@ -271,8 +283,13 @@ export default function LandingPage() {
             ))}
           </div>
           
-          <div className="pt-8 border-t border-slate-800 text-center text-sm">
-            <p>© 2024 Pinflow. All rights reserved.</p>
+          <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+            <p>© 2026 Pinflow. All rights reserved.</p>
+            <div className="flex items-center gap-4">
+              <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
+              <span className="text-slate-700">•</span>
+              <a href="/terms" className="hover:text-white transition-colors">Terms of Service</a>
+            </div>
           </div>
         </div>
       </footer>
