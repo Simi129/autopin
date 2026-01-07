@@ -5,6 +5,7 @@ import { useViewStore } from '@/hooks/useViewSwitcher';
 import { supabase } from '@/lib/supabase';
 import { AuthFormData } from '@/lib/types';
 import { ArrowLeft, Mail, Lock, User } from 'lucide-react';
+import Logo from '@/components/shared/Logo';
 
 export default function AuthView() {
   const { setView } = useViewStore();
@@ -32,7 +33,6 @@ export default function AuthView() {
 
     try {
       if (isSignUp) {
-        // Регистрация
         const { data, error: signUpError } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
@@ -45,11 +45,9 @@ export default function AuthView() {
 
         if (signUpError) throw signUpError;
 
-        // Если email confirmation отключен в Supabase, сразу переходим в дашборд
         if (data.session) {
           setView('dashboard');
         } else {
-          // Если требуется подтверждение email
           setSuccess('Check your email for the confirmation link!');
           setTimeout(() => {
             setIsSignUp(false);
@@ -57,15 +55,12 @@ export default function AuthView() {
           }, 3000);
         }
       } else {
-        // Вход
         const { data, error: signInError } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
         });
 
         if (signInError) throw signInError;
-
-        // Успешный вход - переходим в дашборд
         setView('dashboard');
       }
     } catch (err: any) {
@@ -104,11 +99,8 @@ export default function AuthView() {
         {/* Auth Card */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-xl p-8">
           {/* Logo */}
-          <div className="flex items-center gap-2 mb-8">
-            <div className="w-10 h-10 bg-gradient-to-tr from-rose-500 to-orange-400 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">P</span>
-            </div>
-            <span className="text-xl font-semibold text-slate-900">PINFLOW</span>
+          <div className="mb-8">
+            <Logo size="md" />
           </div>
 
           {/* Title */}

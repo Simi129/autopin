@@ -18,6 +18,8 @@ import {
   Plus,
   MoreHorizontal
 } from 'lucide-react';
+import Logo from '@/components/shared/Logo';
+import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
 export default function DashboardView() {
   const { setView } = useViewStore();
@@ -51,10 +53,7 @@ export default function DashboardView() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500 mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading dashboard...</p>
-        </div>
+        <LoadingSpinner message="Loading dashboard..." />
       </div>
     );
   }
@@ -63,10 +62,7 @@ export default function DashboardView() {
     <div className="min-h-screen bg-slate-50">
       <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-slate-200 flex flex-col">
         <div className="h-16 px-6 flex items-center border-b border-slate-200">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-tr from-rose-500 to-orange-400 rounded-lg"></div>
-            <span className="text-base font-semibold text-slate-900">PINFLOW</span>
-          </div>
+          <Logo size="md" />
         </div>
 
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">

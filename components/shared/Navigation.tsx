@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useViewStore } from '@/hooks/useViewSwitcher';
 import { supabase } from '@/lib/supabase';
-import { Aperture, LogOut, LayoutDashboard } from 'lucide-react';
+import { LogOut, LayoutDashboard } from 'lucide-react';
+import Logo from '@/components/shared/Logo';
 
 export default function Navigation() {
   const { currentView, setView } = useViewStore();
@@ -13,7 +14,6 @@ export default function Navigation() {
   useEffect(() => {
     checkUser();
 
-    // Подписка на изменения аутентификации
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
@@ -37,15 +37,7 @@ export default function Navigation() {
   return (
     <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/60">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <div 
-          className="flex items-center gap-2 cursor-pointer" 
-          onClick={() => setView('landing')}
-        >
-          <div className="w-8 h-8 bg-gradient-to-tr from-rose-500 to-orange-400 rounded-lg flex items-center justify-center text-white">
-            <Aperture size={20} strokeWidth={1.5} />
-          </div>
-          <span className="text-base font-semibold tracking-tight text-slate-900">PINFLOW</span>
-        </div>
+        <Logo onClick={() => setView('landing')} />
         
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-500">
           <a href="#features" className="hover:text-slate-900 transition-colors">Features</a>
@@ -57,7 +49,6 @@ export default function Navigation() {
           {loading ? (
             <div className="w-20 h-8 bg-slate-100 rounded-full animate-pulse"></div>
           ) : user ? (
-            // Авторизованный пользователь
             <>
               <button 
                 onClick={() => setView('dashboard')} 
@@ -85,7 +76,6 @@ export default function Navigation() {
               </div>
             </>
           ) : (
-            // Неавторизованный пользователь
             <>
               <button 
                 onClick={() => setView('auth')} 
