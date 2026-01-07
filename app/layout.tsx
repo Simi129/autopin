@@ -17,6 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Pinterest Domain Verification */}
+        <meta name="p:domain_verify" content="58a5f23109528182b52e8616c82ed76a" />
+        
         <script src="https://code.iconify.design/3/3.1.0/iconify.min.js" async></script>
       </head>
       <body className="antialiased bg-slate-50 text-slate-600">
