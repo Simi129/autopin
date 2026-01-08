@@ -69,7 +69,8 @@ export async function deleteBoard(boardId: string, userId: string) {
 export async function publishNow(data: {
   user_id: string;
   board_id: string;
-  image_url: string;
+  image_url?: string;
+  image_base64?: string;
   title: string;
   description?: string;
   link?: string;
@@ -86,11 +87,12 @@ export async function publishNow(data: {
 export async function schedulePost(data: {
   user_id: string;
   board_id: string;
-  image_url: string;
+  image_url?: string;
+  image_base64?: string;
   title: string;
   description?: string;
   link?: string;
-  scheduled_at: string; // ISO format
+  scheduled_at: string;
 }) {
   const response = await fetch(`${API_URL}/api/schedule-post`, {
     method: 'POST',

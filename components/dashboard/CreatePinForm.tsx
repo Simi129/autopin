@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { getBoards, publishNow, schedulePost, getPinterestStatus } from '@/lib/api';
-import { Calendar, Image as ImageIcon, Loader2, Plus, Upload, X } from 'lucide-react';
+import { Calendar, Image as ImageIcon, Loader2, Plus, Upload, X, Link as LinkIcon } from 'lucide-react';
 import CreateBoardModal from './CreateBoardModal';
 
 export default function CreatePinForm() {
@@ -16,6 +16,7 @@ export default function CreatePinForm() {
   const [showCreateBoardModal, setShowCreateBoardModal] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadMethod, setUploadMethod] = useState<'url' | 'upload'>('url');
+  const [imageBase64, setImageBase64] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState({
@@ -66,60 +67,44 @@ export default function CreatePinForm() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       alert('Please select an image file');
       return;
     }
 
-    // Validate file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      alert('Image size must be less than 10MB');
+    if (file.size > 32 * 1024 * 1024) {
+      alert('Image size must be less than 32MB');
       return;
     }
 
     setUploading(true);
-    try {
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-
-      // Upload to Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      setImagePreview(result);
       
-      const { data, error } = await supabase.storage
-        .from('pin-images')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (error) throw error;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('pin-images')
-        .getPublicUrl(fileName);
-
-      // Set the URL in form
-      setFormData({ ...formData, image_url: publicUrl });
+      // Извлекаем только base64 данные (без префикса data:image/...)
+      const base64Data = result.split(',')[1];
+      setImageBase64(base64Data);
       
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('Failed to upload image. Please try again.');
-      setImagePreview(null);
-    } finally {
+      // Для совместимости устанавливаем URL как превью
+      setFormData({ ...formData, image_url: result });
       setUploading(false);
-    }
+    };
+
+    reader.onerror = () => {
+      alert('Failed to read file');
+      setUploading(false);
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const handleRemoveImage = () => {
     setFormData({ ...formData, image_url: '' });
     setImagePreview(null);
+    setImageBase64(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -127,8 +112,20 @@ export default function CreatePinForm() {
 
   const handleSubmit = async (e: React.FormEvent, action: 'now' | 'schedule') => {
     e.preventDefault();
-    if (!user || !formData.board_id || !formData.image_url || !formData.title) {
+    
+    if (!user || !formData.board_id || !formData.title) {
       alert('Please fill in all required fields');
+      return;
+    }
+
+    // Проверка наличия изображения
+    if (uploadMethod === 'url' && !formData.image_url) {
+      alert('Please enter an image URL');
+      return;
+    }
+
+    if (uploadMethod === 'upload' && !imageBase64) {
+      alert('Please upload an image');
       return;
     }
 
@@ -139,14 +136,20 @@ export default function CreatePinForm() {
 
     setLoading(true);
     try {
-      const postData = {
+      const postData: any = {
         user_id: user.id,
         board_id: formData.board_id,
-        image_url: formData.image_url,
         title: formData.title,
         description: formData.description,
         link: formData.link || undefined,
       };
+
+      // Добавляем изображение в зависимости от метода
+      if (uploadMethod === 'upload' && imageBase64) {
+        postData.image_base64 = imageBase64;
+      } else {
+        postData.image_url = formData.image_url;
+      }
 
       if (action === 'now') {
         await publishNow(postData);
@@ -169,6 +172,7 @@ export default function CreatePinForm() {
         scheduled_at: '',
       });
       setImagePreview(null);
+      setImageBase64(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -206,7 +210,7 @@ export default function CreatePinForm() {
         <h3 className="text-lg font-semibold text-slate-900 mb-6">Create New Pin</h3>
         
         <form className="space-y-4">
-          {/* Board Selection with Create Button */}
+          {/* Board Selection */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
               Board <span className="text-rose-500">*</span>
@@ -237,7 +241,7 @@ export default function CreatePinForm() {
             </div>
           </div>
 
-          {/* Image Upload Method Toggle */}
+          {/* Image Upload Method */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
               Image <span className="text-rose-500">*</span>
@@ -245,24 +249,33 @@ export default function CreatePinForm() {
             <div className="flex gap-2 mb-3">
               <button
                 type="button"
-                onClick={() => setUploadMethod('url')}
-                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                onClick={() => {
+                  setUploadMethod('url');
+                  setImagePreview(null);
+                  setImageBase64(null);
+                }}
+                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
                   uploadMethod === 'url'
                     ? 'bg-rose-50 text-rose-600 border-2 border-rose-500'
                     : 'bg-slate-50 text-slate-600 border-2 border-slate-200'
                 }`}
               >
+                <LinkIcon size={16} />
                 Image URL
               </button>
               <button
                 type="button"
-                onClick={() => setUploadMethod('upload')}
-                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                onClick={() => {
+                  setUploadMethod('upload');
+                  setFormData({ ...formData, image_url: '' });
+                }}
+                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
                   uploadMethod === 'upload'
                     ? 'bg-rose-50 text-rose-600 border-2 border-rose-500'
                     : 'bg-slate-50 text-slate-600 border-2 border-slate-200'
                 }`}
               >
+                <Upload size={16} />
                 Upload File
               </button>
             </div>
@@ -294,18 +307,18 @@ export default function CreatePinForm() {
                     />
                     <label
                       htmlFor="file-upload"
-                      className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:border-rose-500 hover:bg-rose-50 transition-colors"
+                      className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:border-rose-500 hover:bg-rose-50 transition-colors"
                     >
                       {uploading ? (
                         <>
-                          <Loader2 className="w-8 h-8 text-slate-400 animate-spin mb-2" />
-                          <p className="text-sm text-slate-500">Uploading...</p>
+                          <Loader2 className="w-10 h-10 text-slate-400 animate-spin mb-2" />
+                          <p className="text-sm text-slate-500">Processing image...</p>
                         </>
                       ) : (
                         <>
-                          <Upload className="w-8 h-8 text-slate-400 mb-2" />
-                          <p className="text-sm text-slate-600 font-medium">Click to upload</p>
-                          <p className="text-xs text-slate-500 mt-1">PNG, JPG, WEBP (max 10MB)</p>
+                          <Upload className="w-10 h-10 text-slate-400 mb-3" />
+                          <p className="text-sm text-slate-600 font-medium mb-1">Click to upload image</p>
+                          <p className="text-xs text-slate-500">PNG, JPG, WEBP (max 32MB)</p>
                         </>
                       )}
                     </label>
@@ -315,12 +328,12 @@ export default function CreatePinForm() {
                     <img
                       src={imagePreview}
                       alt="Preview"
-                      className="w-full h-48 object-cover rounded-lg"
+                      className="w-full h-56 object-cover rounded-lg"
                     />
                     <button
                       type="button"
                       onClick={handleRemoveImage}
-                      className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                      className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
                     >
                       <X size={16} />
                     </button>
@@ -358,7 +371,7 @@ export default function CreatePinForm() {
               placeholder="Enter pin description"
               rows={3}
               maxLength={500}
-              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 resize-none"
             />
             <p className="text-xs text-slate-500 mt-1">{formData.description.length}/500 characters</p>
           </div>
@@ -431,7 +444,6 @@ export default function CreatePinForm() {
         </form>
       </div>
 
-      {/* Create Board Modal */}
       <CreateBoardModal
         isOpen={showCreateBoardModal}
         onClose={() => setShowCreateBoardModal(false)}
