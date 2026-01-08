@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { getBoards, publishNow, schedulePost, getPinterestStatus } from '@/lib/api';
-import { Calendar, Image as ImageIcon, Loader2, Plus } from 'lucide-react';
+import { Calendar, Image as ImageIcon, Loader2, Plus, Upload, X } from 'lucide-react';
 import CreateBoardModal from './CreateBoardModal';
 
 export default function CreatePinForm() {
@@ -11,8 +11,12 @@ export default function CreatePinForm() {
   const [boards, setBoards] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingBoards, setLoadingBoards] = useState(true);
+  const [uploading, setUploading] = useState(false);
   const [pinterestConnected, setPinterestConnected] = useState(false);
   const [showCreateBoardModal, setShowCreateBoardModal] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploadMethod, setUploadMethod] = useState<'url' | 'upload'>('url');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState({
     board_id: '',
@@ -55,6 +59,69 @@ export default function CreatePinForm() {
     if (user) {
       setLoadingBoards(true);
       await checkPinterestAndLoadBoards(user.id);
+    }
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Image size must be less than 10MB');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      
+      const { data, error } = await supabase.storage
+        .from('pin-images')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) throw error;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('pin-images')
+        .getPublicUrl(fileName);
+
+      // Set the URL in form
+      setFormData({ ...formData, image_url: publicUrl });
+      
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Failed to upload image. Please try again.');
+      setImagePreview(null);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setFormData({ ...formData, image_url: '' });
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -101,6 +168,10 @@ export default function CreatePinForm() {
         link: '',
         scheduled_at: '',
       });
+      setImagePreview(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     } catch (error) {
       console.error('Error publishing/scheduling pin:', error);
       alert('Failed to publish/schedule pin. Please try again.');
@@ -166,19 +237,97 @@ export default function CreatePinForm() {
             </div>
           </div>
 
-          {/* Image URL */}
+          {/* Image Upload Method Toggle */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Image URL <span className="text-rose-500">*</span>
+              Image <span className="text-rose-500">*</span>
             </label>
-            <input
-              type="url"
-              value={formData.image_url}
-              onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-              placeholder="https://example.com/image.jpg"
-              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
-              required
-            />
+            <div className="flex gap-2 mb-3">
+              <button
+                type="button"
+                onClick={() => setUploadMethod('url')}
+                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                  uploadMethod === 'url'
+                    ? 'bg-rose-50 text-rose-600 border-2 border-rose-500'
+                    : 'bg-slate-50 text-slate-600 border-2 border-slate-200'
+                }`}
+              >
+                Image URL
+              </button>
+              <button
+                type="button"
+                onClick={() => setUploadMethod('upload')}
+                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                  uploadMethod === 'upload'
+                    ? 'bg-rose-50 text-rose-600 border-2 border-rose-500'
+                    : 'bg-slate-50 text-slate-600 border-2 border-slate-200'
+                }`}
+              >
+                Upload File
+              </button>
+            </div>
+
+            {/* Image URL Input */}
+            {uploadMethod === 'url' && (
+              <input
+                type="url"
+                value={formData.image_url}
+                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                placeholder="https://example.com/image.jpg"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+                required
+              />
+            )}
+
+            {/* File Upload */}
+            {uploadMethod === 'upload' && (
+              <div>
+                {!imagePreview ? (
+                  <div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                      id="file-upload"
+                    />
+                    <label
+                      htmlFor="file-upload"
+                      className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:border-rose-500 hover:bg-rose-50 transition-colors"
+                    >
+                      {uploading ? (
+                        <>
+                          <Loader2 className="w-8 h-8 text-slate-400 animate-spin mb-2" />
+                          <p className="text-sm text-slate-500">Uploading...</p>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-8 h-8 text-slate-400 mb-2" />
+                          <p className="text-sm text-slate-600 font-medium">Click to upload</p>
+                          <p className="text-xs text-slate-500 mt-1">PNG, JPG, WEBP (max 10MB)</p>
+                        </>
+                      )}
+                    </label>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="w-full h-48 object-cover rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Title */}
@@ -247,7 +396,7 @@ export default function CreatePinForm() {
             <button
               type="button"
               onClick={(e) => handleSubmit(e, 'now')}
-              disabled={loading}
+              disabled={loading || uploading}
               className="flex-1 py-3 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
@@ -263,7 +412,7 @@ export default function CreatePinForm() {
             <button
               type="button"
               onClick={(e) => handleSubmit(e, 'schedule')}
-              disabled={loading || !formData.scheduled_at}
+              disabled={loading || uploading || !formData.scheduled_at}
               className="flex-1 py-3 bg-rose-600 text-white font-medium rounded-lg hover:bg-rose-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
