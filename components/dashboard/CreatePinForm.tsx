@@ -16,7 +16,6 @@ export default function CreatePinForm() {
   const [showCreateBoardModal, setShowCreateBoardModal] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadMethod, setUploadMethod] = useState<'url' | 'upload'>('url');
-  const [imageBase64, setImageBase64] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState({
@@ -79,32 +78,64 @@ export default function CreatePinForm() {
 
     setUploading(true);
     
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      setImagePreview(result);
-      
-      // Извлекаем только base64 данные (без префикса data:image/...)
-      const base64Data = result.split(',')[1];
-      setImageBase64(base64Data);
-      
-      // Для совместимости устанавливаем URL как превью
-      setFormData({ ...formData, image_url: result });
-      setUploading(false);
-    };
+    try {
+      // Показываем preview локально
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
 
-    reader.onerror = () => {
-      alert('Failed to read file');
-      setUploading(false);
-    };
+      // Загружаем в Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      
+      const { data, error } = await supabase.storage
+        .from('pin-images')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-    reader.readAsDataURL(file);
+      if (error) {
+        console.error('Upload error:', error);
+        throw error;
+      }
+
+      // Получаем публичный URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('pin-images')
+        .getPublicUrl(fileName);
+
+      console.log('✅ Image uploaded:', publicUrl);
+
+      // Проверяем доступность URL
+      try {
+        const checkResponse = await fetch(publicUrl, { method: 'HEAD' });
+        if (!checkResponse.ok) {
+          throw new Error('Uploaded image is not accessible');
+        }
+        console.log('✅ Image URL is accessible');
+      } catch (err) {
+        console.error('❌ Image URL not accessible:', err);
+        throw new Error('Image uploaded but not publicly accessible. Please check Storage settings.');
+      }
+
+      // Устанавливаем URL в форму
+      setFormData({ ...formData, image_url: publicUrl });
+      
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Failed to upload image. Please try using an image URL instead.');
+      setImagePreview(null);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleRemoveImage = () => {
     setFormData({ ...formData, image_url: '' });
     setImagePreview(null);
-    setImageBase64(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -118,14 +149,8 @@ export default function CreatePinForm() {
       return;
     }
 
-    // Проверка наличия изображения
-    if (uploadMethod === 'url' && !formData.image_url) {
-      alert('Please enter an image URL');
-      return;
-    }
-
-    if (uploadMethod === 'upload' && !imageBase64) {
-      alert('Please upload an image');
+    if (!formData.image_url) {
+      alert('Please provide an image (URL or upload)');
       return;
     }
 
@@ -136,20 +161,14 @@ export default function CreatePinForm() {
 
     setLoading(true);
     try {
-      const postData: any = {
+      const postData = {
         user_id: user.id,
         board_id: formData.board_id,
+        image_url: formData.image_url,
         title: formData.title,
         description: formData.description,
         link: formData.link || undefined,
       };
-
-      // Добавляем изображение в зависимости от метода
-      if (uploadMethod === 'upload' && imageBase64) {
-        postData.image_base64 = imageBase64;
-      } else {
-        postData.image_url = formData.image_url;
-      }
 
       if (action === 'now') {
         await publishNow(postData);
@@ -172,7 +191,6 @@ export default function CreatePinForm() {
         scheduled_at: '',
       });
       setImagePreview(null);
-      setImageBase64(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -252,7 +270,6 @@ export default function CreatePinForm() {
                 onClick={() => {
                   setUploadMethod('url');
                   setImagePreview(null);
-                  setImageBase64(null);
                 }}
                 className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
                   uploadMethod === 'url'
@@ -312,7 +329,7 @@ export default function CreatePinForm() {
                       {uploading ? (
                         <>
                           <Loader2 className="w-10 h-10 text-slate-400 animate-spin mb-2" />
-                          <p className="text-sm text-slate-500">Processing image...</p>
+                          <p className="text-sm text-slate-500">Uploading to cloud...</p>
                         </>
                       ) : (
                         <>
@@ -337,6 +354,11 @@ export default function CreatePinForm() {
                     >
                       <X size={16} />
                     </button>
+                    {formData.image_url && (
+                      <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs text-green-700">
+                        ✓ Image uploaded successfully
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
