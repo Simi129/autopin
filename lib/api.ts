@@ -27,6 +27,44 @@ export async function getBoards(userId: string) {
   return response.json();
 }
 
+export async function createBoard(data: {
+  user_id: string;
+  name: string;
+  description?: string;
+  privacy?: string;
+}) {
+  const response = await fetch(`${API_URL}/api/boards/create`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error('Failed to create board');
+  return response.json();
+}
+
+export async function updateBoard(boardId: string, data: {
+  user_id: string;
+  name?: string;
+  description?: string;
+  privacy?: string;
+}) {
+  const response = await fetch(`${API_URL}/api/boards/${boardId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error('Failed to update board');
+  return response.json();
+}
+
+export async function deleteBoard(boardId: string, userId: string) {
+  const response = await fetch(`${API_URL}/api/boards/${boardId}?user_id=${userId}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) throw new Error('Failed to delete board');
+  return response.json();
+}
+
 // Posts
 export async function publishNow(data: {
   user_id: string;
