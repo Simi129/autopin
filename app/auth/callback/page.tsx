@@ -2,19 +2,49 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
 export default function AuthCallback() {
   const router = useRouter();
 
   useEffect(() => {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
     const handleCallback = async () => {
-      const { error } = await supabase.auth.exchangeCodeForSession(window.location.search);
-      
-      if (error) {
-        router.push('/login?error=auth_failed');
-      } else {
+      try {
+        // Проверяем, есть ли code в URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        
+        if (code) {
+          // Обмениваем code на session
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          
+          if (error) {
+            console.error('Auth error:', error);
+            router.push('/login?error=auth_failed');
+            return;
+          }
+        }
+        
+        // Проверяем сессию
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError || !session) {
+          console.error('Session error:', sessionError);
+          router.push('/login?error=no_session');
+          return;
+        }
+        
+        // Успешно - редирект в dashboard
         router.push('/dashboard');
+        
+      } catch (error) {
+        console.error('Callback error:', error);
+        router.push('/login?error=callback_failed');
       }
     };
 
