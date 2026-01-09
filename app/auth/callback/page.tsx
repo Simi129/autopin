@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase-browser';
 
-export default function AuthCallback() {
+function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
@@ -15,7 +15,7 @@ export default function AuthCallback() {
         const token_hash = searchParams.get('token_hash');
         const type = searchParams.get('type');
 
-        console.log('Callback params:', { token_hash, type }); // Для отладки
+        console.log('Callback params:', { token_hash, type });
 
         if (!token_hash || !type) {
           console.error('Missing token_hash or type');
@@ -59,7 +59,6 @@ export default function AuthCallback() {
         }
 
         console.log('Session created, redirecting to dashboard');
-        // Успех! Редирект в dashboard
         router.push('/dashboard');
         
       } catch (error: any) {
@@ -95,5 +94,20 @@ export default function AuthCallback() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AuthCallback() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-slate-200 border-t-rose-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <AuthCallbackContent />
+    </Suspense>
   );
 }
