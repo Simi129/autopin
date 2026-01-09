@@ -16,7 +16,7 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
+          cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
           supabaseResponse = NextResponse.next({
@@ -30,37 +30,20 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const { pathname, searchParams } = request.nextUrl;
-
-  // Проверяем наличие tokens в URL (email confirmation callback)
-  const access_token = searchParams.get('access_token');
-  const refresh_token = searchParams.get('refresh_token');
-
-  // Если есть tokens - устанавливаем сессию и редиректим
-  if (access_token && refresh_token) {
-    const { error } = await supabase.auth.setSession({
-      access_token,
-      refresh_token,
-    });
-
-    if (!error) {
-      // Редиректим на dashboard БЕЗ параметров
-      return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
-  }
-
-  // ВАЖНО: Обновляем session через getUser для правильной установки cookies
+  // Просто проверяем user - cookies УЖЕ установлены Supabase
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  const { pathname } = request.nextUrl;
 
   // Если пользователь НЕ авторизован и пытается зайти в dashboard
   if (!user && pathname.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // Если пользователь авторизован и пытается зайти на login (БЕЗ tokens)
-  if (user && pathname === '/login' && !access_token) {
+  // Если пользователь авторизован и пытается зайти на login
+  if (user && pathname === '/login') {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
@@ -69,13 +52,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

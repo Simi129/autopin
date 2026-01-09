@@ -52,19 +52,20 @@ export default function AuthView() {
             data: {
               full_name: formData.full_name,
             },
-            emailRedirectTo: `${window.location.origin}/login`,
+            // ВАЖНО: redirect на /dashboard, НЕ на /login!
+            // Supabase установит cookies, потом редиректнет сюда
+            emailRedirectTo: `${window.location.origin}/dashboard`,
           },
         });
 
         if (signUpError) throw signUpError;
 
-        // Если сессия создана сразу (autoConfirm enabled) - редиректим в дашборд
+        // Если сессия создана сразу (autoConfirm enabled)
         if (data.session) {
           router.push('/dashboard');
         } else if (data.user && !data.session) {
-          // Если требуется подтверждение email
+          // Требуется подтверждение email
           setSuccess('Check your email for the confirmation link!');
-          // НЕ переключаем обратно на login - пусть видят сообщение
         }
       } else {
         const { data, error: signInError } = await supabase.auth.signInWithPassword({
