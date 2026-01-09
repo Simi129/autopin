@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { User } from '@/lib/types';
+import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { 
   TrendingUp, 
   Users, 
@@ -28,18 +29,20 @@ export default function DashboardLayout({
   useEffect(() => {
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        router.push('/login');
-      } else {
-        setUser({
-          id: session.user.id,
-          email: session.user.email!,
-          full_name: session.user.user_metadata?.full_name,
-          avatar_url: session.user.user_metadata?.avatar_url,
-        });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event: AuthChangeEvent, session: Session | null) => {
+        if (!session) {
+          router.push('/login');
+        } else {
+          setUser({
+            id: session.user.id,
+            email: session.user.email!,
+            full_name: session.user.user_metadata?.full_name,
+            avatar_url: session.user.user_metadata?.avatar_url,
+          });
+        }
       }
-    });
+    );
 
     return () => subscription.unsubscribe();
   }, [router]);
