@@ -2,14 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useViewStore } from '@/hooks/useViewSwitcher';
 import { supabase } from '@/lib/supabase';
 import { AuthFormData } from '@/lib/types';
 import { ArrowLeft, Mail, Lock, User } from 'lucide-react';
 import Logo from '@/components/shared/Logo';
 
 export default function AuthView() {
-  const { setView } = useViewStore();
+  const router = useRouter();
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,10 +46,9 @@ export default function AuthView() {
 
         if (signUpError) throw signUpError;
 
-        // Проверяем, создана ли сессия сразу (autoConfirm enabled) или требуется подтверждение email
+        // Если сессия создана сразу - редиректим в дашборд
         if (data.session) {
-          // Если сессия создана сразу - редиректим в дашборд
-          setView('dashboard');
+          router.push('/dashboard');
         } else if (data.user && !data.session) {
           // Если требуется подтверждение email
           setSuccess('Check your email for the confirmation link!');
@@ -68,7 +66,7 @@ export default function AuthView() {
         if (signInError) throw signInError;
         
         if (data.session) {
-          setView('dashboard');
+          router.push('/dashboard');
         }
       }
     } catch (err: any) {
@@ -97,7 +95,7 @@ export default function AuthView() {
       <div className="w-full max-w-md">
         {/* Back Button */}
         <button
-          onClick={() => setView('landing')}
+          onClick={() => router.push('/')}
           className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-8 transition-colors"
         >
           <ArrowLeft size={20} />
@@ -248,9 +246,9 @@ export default function AuthView() {
         {/* Terms */}
         <p className="text-center text-xs text-slate-500 mt-6">
           By continuing, you agree to Pinflow's{' '}
-          <a href="#" className="underline hover:text-slate-700">Terms of Service</a>
+          <a href="/terms" className="underline hover:text-slate-700">Terms of Service</a>
           {' '}and{' '}
-          <a href="#" className="underline hover:text-slate-700">Privacy Policy</a>
+          <a href="/privacy" className="underline hover:text-slate-700">Privacy Policy</a>
         </p>
       </div>
     </div>

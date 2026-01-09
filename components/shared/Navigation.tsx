@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useViewStore } from '@/hooks/useViewSwitcher';
+import { useRouter, usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { LogOut, LayoutDashboard } from 'lucide-react';
 import Logo from '@/components/shared/Logo';
 
 export default function Navigation() {
-  const { currentView, setView } = useViewStore();
+  const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -29,15 +30,16 @@ export default function Navigation() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    setView('landing');
+    router.push('/');
   };
 
-  if (currentView === 'dashboard') return null;
+  // Скрываем навигацию на страницах дашборда (у них свой сайдбар)
+  if (pathname?.startsWith('/dashboard')) return null;
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/60">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Logo onClick={() => setView('landing')} />
+        <Logo onClick={() => router.push('/')} />
         
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-500">
           <a href="#features" className="hover:text-slate-900 transition-colors">Features</a>
@@ -51,7 +53,7 @@ export default function Navigation() {
           ) : user ? (
             <>
               <button 
-                onClick={() => setView('dashboard')} 
+                onClick={() => router.push('/dashboard')} 
                 className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-2"
               >
                 <LayoutDashboard size={16} />
@@ -78,13 +80,13 @@ export default function Navigation() {
           ) : (
             <>
               <button 
-                onClick={() => setView('auth')} 
+                onClick={() => router.push('/login')} 
                 className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
               >
                 Log in
               </button>
               <button 
-                onClick={() => setView('auth')} 
+                onClick={() => router.push('/login')} 
                 className="text-sm font-medium bg-slate-900 text-white px-4 py-2 rounded-full hover:bg-slate-800 transition-all shadow-sm ring-1 ring-slate-900/5"
               >
                 Start Free
