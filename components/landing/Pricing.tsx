@@ -1,10 +1,10 @@
 'use client';
 
-import { useViewStore } from '@/hooks/useViewSwitcher';
+import { useRouter } from 'next/navigation';
 import { Sparkles, Calendar, ArrowRight } from 'lucide-react';
 
 export default function Pricing() {
-  const { setView } = useViewStore();
+  const router = useRouter();
 
   return (
     <section id="pricing" className="relative max-w-6xl mx-auto px-6 py-20 overflow-hidden">
@@ -98,7 +98,7 @@ export default function Pricing() {
             {/* CTA Button */}
             <div className="text-center">
               <button
-                onClick={() => setView('auth')}
+                onClick={() => router.push('/login')}
                 className="group relative inline-flex items-center justify-center gap-3 px-12 py-5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white font-semibold text-lg hover:scale-105 transition-all shadow-2xl shadow-slate-900/30 overflow-hidden"
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-rose-600 via-orange-600 to-rose-600 opacity-0 group-hover:opacity-100 transition-opacity"></span>

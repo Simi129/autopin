@@ -1,10 +1,10 @@
 'use client';
 
-import { useViewStore } from '@/hooks/useViewSwitcher';
+import { useRouter } from 'next/navigation';
 import { ArrowRight, PlayCircle } from 'lucide-react';
 
 export default function Hero() {
-  const { setView } = useViewStore();
+  const router = useRouter();
 
   return (
     <section className="max-w-5xl mx-auto px-6 text-center py-20">
@@ -29,7 +29,7 @@ export default function Hero() {
       
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
         <button 
-          onClick={() => setView('dashboard')} 
+          onClick={() => router.push('/login')} 
           className="h-12 px-8 rounded-full bg-slate-900 text-white font-medium hover:bg-slate-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-900/20"
         >
           Get Started 
