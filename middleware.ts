@@ -56,12 +56,31 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // ВАЖНО: Обновляем сессию перед проверкой пользователя
+  const { pathname, searchParams } = request.nextUrl;
+
+  // Проверяем наличие tokens в URL (email confirmation callback)
+  const access_token = searchParams.get('access_token');
+  const refresh_token = searchParams.get('refresh_token');
+
+  // Если есть tokens в URL - это callback от email confirmation
+  if (access_token && refresh_token) {
+    // Устанавливаем сессию
+    const { error } = await supabase.auth.setSession({
+      access_token,
+      refresh_token,
+    });
+
+    if (!error) {
+      // Редиректим на dashboard без параметров в URL
+      const redirectUrl = new URL('/dashboard', request.url);
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
+
+  // Обновляем сессию
   const {
     data: { session },
   } = await supabase.auth.getSession();
-
-  const { pathname } = request.nextUrl;
 
   // Если пользователь НЕ авторизован и пытается зайти в dashboard
   if (!session && pathname.startsWith('/dashboard')) {
@@ -69,8 +88,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Если пользователь авторизован и пытается зайти на login
-  if (session && pathname === '/login') {
+  // Если пользователь авторизован и пытается зайти на login (но БЕЗ токенов в URL)
+  if (session && pathname === '/login' && !access_token) {
     const redirectUrl = new URL('/dashboard', request.url);
     return NextResponse.redirect(redirectUrl);
   }

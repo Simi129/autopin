@@ -1,42 +1,13 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { AuthFormData } from '@/lib/types';
 import { ArrowLeft, Mail, Lock, User } from 'lucide-react';
 import Logo from '@/components/shared/Logo';
 
-// Компонент для обработки email callback (использует useSearchParams)
-function EmailCallbackHandler() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const handleEmailConfirmation = async () => {
-      const access_token = searchParams.get('access_token');
-      const refresh_token = searchParams.get('refresh_token');
-      
-      if (access_token && refresh_token) {
-        const { error } = await supabase.auth.setSession({
-          access_token,
-          refresh_token,
-        });
-        
-        if (!error) {
-          router.push('/dashboard');
-        }
-      }
-    };
-
-    handleEmailConfirmation();
-  }, [searchParams, router]);
-
-  return null;
-}
-
-// Основной компонент авторизации
-function AuthContent() {
+export default function AuthView() {
   const router = useRouter();
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -93,10 +64,7 @@ function AuthContent() {
         } else if (data.user && !data.session) {
           // Если требуется подтверждение email
           setSuccess('Check your email for the confirmation link!');
-          setTimeout(() => {
-            setIsSignUp(false);
-            setSuccess(null);
-          }, 3000);
+          // НЕ переключаем обратно на login - пусть видят сообщение
         }
       } else {
         const { data, error: signInError } = await supabase.auth.signInWithPassword({
@@ -293,17 +261,5 @@ function AuthContent() {
         </p>
       </div>
     </div>
-  );
-}
-
-// Главный экспорт с Suspense boundary
-export default function AuthView() {
-  return (
-    <>
-      <Suspense fallback={null}>
-        <EmailCallbackHandler />
-      </Suspense>
-      <AuthContent />
-    </>
   );
 }
