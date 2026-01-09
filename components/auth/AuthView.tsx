@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { AuthFormData } from '@/lib/types';
 import { ArrowLeft, Mail, Lock, User } from 'lucide-react';
@@ -9,6 +9,7 @@ import Logo from '@/components/shared/Logo';
 
 export default function AuthView() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,6 +20,39 @@ export default function AuthView() {
     password: '',
     full_name: '',
   });
+
+  // Проверяем если пользователь уже авторизован при загрузке
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  // Обрабатываем callback от email подтверждения
+  useEffect(() => {
+    const handleEmailConfirmation = async () => {
+      const access_token = searchParams.get('access_token');
+      const refresh_token = searchParams.get('refresh_token');
+      
+      if (access_token && refresh_token) {
+        const { error } = await supabase.auth.setSession({
+          access_token,
+          refresh_token,
+        });
+        
+        if (!error) {
+          router.push('/dashboard');
+        }
+      }
+    };
+
+    handleEmailConfirmation();
+  }, [searchParams, router]);
+
+  const checkUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      router.push('/dashboard');
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -40,13 +74,13 @@ export default function AuthView() {
             data: {
               full_name: formData.full_name,
             },
-            emailRedirectTo: `${window.location.origin}/dashboard`,
+            emailRedirectTo: `${window.location.origin}/login`,
           },
         });
 
         if (signUpError) throw signUpError;
 
-        // Если сессия создана сразу - редиректим в дашборд
+        // Если сессия создана сразу (autoConfirm enabled) - редиректим в дашборд
         if (data.session) {
           router.push('/dashboard');
         } else if (data.user && !data.session) {
