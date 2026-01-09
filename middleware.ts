@@ -1,13 +1,10 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import type { CookieOptions } from '@supabase/ssr';
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+  let supabaseResponse = NextResponse.next({
+    request,
   });
 
   const supabase = createServerClient(
@@ -15,42 +12,19 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
+        getAll() {
+          return request.cookies.getAll();
         },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value,
-            ...options,
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            request.cookies.set(name, value)
+          );
+          supabaseResponse = NextResponse.next({
+            request,
           });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          });
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value: '',
-            ...options,
-          });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          );
         },
       },
     }
@@ -62,41 +36,46 @@ export async function middleware(request: NextRequest) {
   const access_token = searchParams.get('access_token');
   const refresh_token = searchParams.get('refresh_token');
 
-  // Если есть tokens в URL - это callback от email confirmation
+  // Если есть tokens - устанавливаем сессию и редиректим
   if (access_token && refresh_token) {
-    // Устанавливаем сессию
     const { error } = await supabase.auth.setSession({
       access_token,
       refresh_token,
     });
 
     if (!error) {
-      // Редиректим на dashboard без параметров в URL
-      const redirectUrl = new URL('/dashboard', request.url);
-      return NextResponse.redirect(redirectUrl);
+      // Редиректим на dashboard БЕЗ параметров
+      return NextResponse.redirect(new URL('/dashboard', request.url));
     }
   }
 
-  // Обновляем сессию
+  // ВАЖНО: Обновляем session через getUser для правильной установки cookies
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // Если пользователь НЕ авторизован и пытается зайти в dashboard
-  if (!session && pathname.startsWith('/dashboard')) {
-    const redirectUrl = new URL('/login', request.url);
-    return NextResponse.redirect(redirectUrl);
+  if (!user && pathname.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // Если пользователь авторизован и пытается зайти на login (но БЕЗ токенов в URL)
-  if (session && pathname === '/login' && !access_token) {
-    const redirectUrl = new URL('/dashboard', request.url);
-    return NextResponse.redirect(redirectUrl);
+  // Если пользователь авторизован и пытается зайти на login (БЕЗ tokens)
+  if (user && pathname === '/login' && !access_token) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  return response;
+  return supabaseResponse;
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login'],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * Feel free to modify this pattern to include more paths.
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 };
