@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useViewStore } from '@/hooks/useViewSwitcher';
 import { supabase } from '@/lib/supabase';
 import { AuthFormData } from '@/lib/types';
@@ -40,14 +41,18 @@ export default function AuthView() {
             data: {
               full_name: formData.full_name,
             },
+            emailRedirectTo: `${window.location.origin}/dashboard`,
           },
         });
 
         if (signUpError) throw signUpError;
 
+        // Проверяем, создана ли сессия сразу (autoConfirm enabled) или требуется подтверждение email
         if (data.session) {
+          // Если сессия создана сразу - редиректим в дашборд
           setView('dashboard');
-        } else {
+        } else if (data.user && !data.session) {
+          // Если требуется подтверждение email
           setSuccess('Check your email for the confirmation link!');
           setTimeout(() => {
             setIsSignUp(false);
@@ -61,7 +66,10 @@ export default function AuthView() {
         });
 
         if (signInError) throw signInError;
-        setView('dashboard');
+        
+        if (data.session) {
+          setView('dashboard');
+        }
       }
     } catch (err: any) {
       setError(err.message || 'An error occurred');
@@ -75,7 +83,7 @@ export default function AuthView() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/dashboard`,
         },
       });
       if (error) throw error;
