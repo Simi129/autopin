@@ -1,32 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { AuthFormData } from '@/lib/types';
 import { ArrowLeft, Mail, Lock, User } from 'lucide-react';
 import Logo from '@/components/shared/Logo';
 
-export default function AuthView() {
+// Компонент для обработки email callback (использует useSearchParams)
+function EmailCallbackHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  
-  const [formData, setFormData] = useState<AuthFormData>({
-    email: '',
-    password: '',
-    full_name: '',
-  });
 
-  // Проверяем если пользователь уже авторизован при загрузке
-  useEffect(() => {
-    checkUser();
-  }, []);
-
-  // Обрабатываем callback от email подтверждения
   useEffect(() => {
     const handleEmailConfirmation = async () => {
       const access_token = searchParams.get('access_token');
@@ -46,6 +31,28 @@ export default function AuthView() {
 
     handleEmailConfirmation();
   }, [searchParams, router]);
+
+  return null;
+}
+
+// Основной компонент авторизации
+function AuthContent() {
+  const router = useRouter();
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  
+  const [formData, setFormData] = useState<AuthFormData>({
+    email: '',
+    password: '',
+    full_name: '',
+  });
+
+  // Проверяем если пользователь уже авторизован при загрузке
+  useEffect(() => {
+    checkUser();
+  }, []);
 
   const checkUser = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -286,5 +293,17 @@ export default function AuthView() {
         </p>
       </div>
     </div>
+  );
+}
+
+// Главный экспорт с Suspense boundary
+export default function AuthView() {
+  return (
+    <>
+      <Suspense fallback={null}>
+        <EmailCallbackHandler />
+      </Suspense>
+      <AuthContent />
+    </>
   );
 }
