@@ -54,7 +54,7 @@ export default function AuthView() {
             },
             // ВАЖНО: redirect на /dashboard, НЕ на /login!
             // Supabase установит cookies, потом редиректнет сюда
-            emailRedirectTo: `${window.location.origin}/dashboard`,
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
           },
         });
 
