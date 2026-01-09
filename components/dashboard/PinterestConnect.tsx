@@ -3,33 +3,49 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { connectPinterest, getPinterestStatus, disconnectPinterest } from '@/lib/api';
-import { Link2, CheckCircle, Loader2 } from 'lucide-react';
+import { Link2, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 
 export default function PinterestConnect() {
   const [user, setUser] = useState<any>(null);
   const [pinterestStatus, setPinterestStatus] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [disconnecting, setDisconnecting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     checkUser();
   }, []);
 
   const checkUser = async () => {
+    console.time('⏱️ PinterestConnect: Total loading time');
+    console.time('⏱️ PinterestConnect: Getting user');
+    
     const { data: { user } } = await supabase.auth.getUser();
+    console.timeEnd('⏱️ PinterestConnect: Getting user');
+    
     if (user) {
       setUser(user);
       await checkPinterestStatus(user.id);
     }
+    
     setLoading(false);
+    console.timeEnd('⏱️ PinterestConnect: Total loading time');
   };
 
   const checkPinterestStatus = async (userId: string) => {
+    console.time('⏱️ PinterestConnect: API call getPinterestStatus');
+    
     try {
       const status = await getPinterestStatus(userId);
+      console.timeEnd('⏱️ PinterestConnect: API call getPinterestStatus');
+      console.log('✅ Pinterest status:', status);
       setPinterestStatus(status);
     } catch (error) {
-      console.error('Error checking Pinterest status:', error);
+      console.timeEnd('⏱️ PinterestConnect: API call getPinterestStatus');
+      console.error('❌ Error checking Pinterest status:', error);
+      setError('Failed to load Pinterest connection status');
+      // Устанавливаем дефолтное состояние при ошибке
+      setPinterestStatus({ connected: false });
     }
   };
 
@@ -58,6 +74,31 @@ export default function PinterestConnect() {
     return (
       <div className="flex items-center justify-center p-6 bg-white rounded-xl border border-slate-200">
         <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
+        <span className="ml-2 text-sm text-slate-500">Loading Pinterest connection...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white rounded-xl border border-red-200 p-6">
+        <div className="flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <h3 className="text-sm font-semibold text-red-900">Connection Error</h3>
+            <p className="text-sm text-red-600 mt-1">{error}</p>
+            <button
+              onClick={() => {
+                setError(null);
+                setLoading(true);
+                checkUser();
+              }}
+              className="mt-3 text-sm text-red-600 hover:text-red-700 font-medium"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
