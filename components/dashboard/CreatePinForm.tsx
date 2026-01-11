@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { getBoards, publishNow, schedulePost, getPinterestStatus } from '@/lib/api';
-import { Calendar, Image as ImageIcon, Loader2, Plus, Upload, X, Link as LinkIcon } from 'lucide-react';
+import { Calendar, Image as ImageIcon, Loader2, Plus, Upload, X, Link as LinkIcon, Tag } from 'lucide-react';
 import CreateBoardModal from './CreateBoardModal';
 
 export default function CreatePinForm() {
@@ -16,6 +16,7 @@ export default function CreatePinForm() {
   const [showCreateBoardModal, setShowCreateBoardModal] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadMethod, setUploadMethod] = useState<'url' | 'upload'>('url');
+  const [keywordInput, setKeywordInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState({
@@ -25,6 +26,7 @@ export default function CreatePinForm() {
     description: '',
     link: '',
     scheduled_at: '',
+    keywords: [] as string[], // Добавили ключевые слова
   });
 
   useEffect(() => {
@@ -141,6 +143,25 @@ export default function CreatePinForm() {
     }
   };
 
+  // Функции для работы с ключевыми словами
+  const handleAddKeyword = () => {
+    const keyword = keywordInput.trim();
+    if (keyword && !formData.keywords.includes(keyword)) {
+      setFormData({
+        ...formData,
+        keywords: [...formData.keywords, keyword],
+      });
+      setKeywordInput('');
+    }
+  };
+
+  const handleRemoveKeyword = (keyword: string) => {
+    setFormData({
+      ...formData,
+      keywords: formData.keywords.filter(k => k !== keyword),
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent, action: 'now' | 'schedule') => {
     e.preventDefault();
     
@@ -168,6 +189,7 @@ export default function CreatePinForm() {
         title: formData.title,
         description: formData.description,
         link: formData.link || undefined,
+        keywords: formData.keywords.length > 0 ? formData.keywords : undefined, // Добавили keywords
       };
 
       if (action === 'now') {
@@ -189,8 +211,10 @@ export default function CreatePinForm() {
         description: '',
         link: '',
         scheduled_at: '',
+        keywords: [],
       });
       setImagePreview(null);
+      setKeywordInput('');
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -224,14 +248,12 @@ export default function CreatePinForm() {
 
   return (
     <>
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-6">Create New Pin</h3>
-        
-        <form className="space-y-4">
+      <div className="bg-white rounded-xl border border-slate-200 p-8">
+        <form className="space-y-6">
           {/* Board Selection */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Board <span className="text-rose-500">*</span>
+              Select Board <span className="text-rose-500">*</span>
             </label>
             <div className="flex gap-2">
               <select
@@ -240,7 +262,7 @@ export default function CreatePinForm() {
                 className="flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
                 required
               >
-                <option value="">Select a board</option>
+                <option value="">Choose a board...</option>
                 {boards.map((board) => (
                   <option key={board.id} value={board.id}>
                     {board.name}
@@ -250,8 +272,7 @@ export default function CreatePinForm() {
               <button
                 type="button"
                 onClick={() => setShowCreateBoardModal(true)}
-                className="px-4 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-2 text-sm font-medium text-slate-600"
-                title="Create new board"
+                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2 font-medium"
               >
                 <Plus size={16} />
                 New
@@ -396,6 +417,60 @@ export default function CreatePinForm() {
               className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 resize-none"
             />
             <p className="text-xs text-slate-500 mt-1">{formData.description.length}/500 characters</p>
+          </div>
+
+          {/* Keywords Section - НОВОЕ! */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              <Tag className="w-4 h-4 inline mr-1" />
+              Keywords / Hashtags
+            </label>
+            <div className="flex gap-2 mb-3">
+              <input
+                type="text"
+                value={keywordInput}
+                onChange={(e) => setKeywordInput(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAddKeyword();
+                  }
+                }}
+                placeholder="Add keywords (e.g., DIY, crafts, ideas)"
+                className="flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+              />
+              <button
+                type="button"
+                onClick={handleAddKeyword}
+                className="px-4 py-2 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 transition-colors font-medium flex items-center gap-2"
+              >
+                <Plus size={16} />
+                Add
+              </button>
+            </div>
+            
+            {formData.keywords.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-2">
+                {formData.keywords.map((keyword) => (
+                  <span
+                    key={keyword}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-rose-50 text-rose-700 rounded-full text-sm font-medium"
+                  >
+                    #{keyword}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveKeyword(keyword)}
+                      className="hover:bg-rose-100 rounded-full p-0.5"
+                    >
+                      <X size={14} />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <p className="text-xs text-slate-500">
+              💡 Keywords help your pin be discovered by the right audience. They'll be added as hashtags to your pin.
+            </p>
           </div>
 
           {/* Link */}

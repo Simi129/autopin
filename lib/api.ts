@@ -73,6 +73,7 @@ export async function publishNow(data: {
   title: string;
   description?: string;
   link?: string;
+  keywords?: string[];
 }) {
   const response = await fetch(`${API_URL}/api/publish-now`, {
     method: 'POST',
@@ -91,6 +92,7 @@ export async function schedulePost(data: {
   description?: string;
   link?: string;
   scheduled_at: string;
+  keywords?: string[];
 }) {
   const response = await fetch(`${API_URL}/api/schedule-post`, {
     method: 'POST',
@@ -98,5 +100,30 @@ export async function schedulePost(data: {
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error('Failed to schedule post');
+  return response.json();
+}
+
+// Analytics
+export async function getAccountAnalytics(userId: string, days: number = 30) {
+  const response = await fetch(
+    `${API_URL}/api/analytics/account?user_id=${userId}&days=${days}`
+  );
+  if (!response.ok) throw new Error('Failed to get account analytics');
+  return response.json();
+}
+
+export async function getPinAnalytics(pinId: string, userId: string, days: number = 30) {
+  const response = await fetch(
+    `${API_URL}/api/analytics/pin/${pinId}?user_id=${userId}&days=${days}`
+  );
+  if (!response.ok) throw new Error('Failed to get pin analytics');
+  return response.json();
+}
+
+export async function getBoardAnalytics(boardId: string, userId: string, days: number = 30) {
+  const response = await fetch(
+    `${API_URL}/api/analytics/board/${boardId}?user_id=${userId}&days=${days}`
+  );
+  if (!response.ok) throw new Error('Failed to get board analytics');
   return response.json();
 }
