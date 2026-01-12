@@ -22,9 +22,9 @@ export default function TermsOfService() {
       </header>
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-orange-50 to-rose-50 border-b border-slate-200">
+      <div className="bg-gradient-to-br from-orange-50 to-orange-100 border-b border-slate-200">
         <div className="max-w-4xl mx-auto px-6 py-16 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-500 to-orange-500 text-white mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-400 text-white mb-6">
             <FileText size={32} strokeWidth={1.5} />
           </div>
           <h1 className="text-4xl md:text-5xl font-semibold text-slate-900 mb-4">
@@ -34,7 +34,7 @@ export default function TermsOfService() {
             Please read these terms carefully
           </p>
           <p className="text-sm text-slate-500">
-            Last updated: January 7, 2026
+            Last updated: January 12, 2026
           </p>
         </div>
       </div>
@@ -46,8 +46,8 @@ export default function TermsOfService() {
           {/* Introduction */}
           <div className="prose prose-slate max-w-none">
             <p className="text-lg text-slate-600 leading-relaxed">
-              Welcome to Autopin! These Terms of Service govern your use of our Pinterest automation 
-              and scheduling platform. By accessing or using Autopin, you agree to be bound by these terms.
+              Welcome to Pinflow! These Terms of Service govern your use of our Pinterest automation 
+              and scheduling platform. By accessing or using Pinflow, you agree to be bound by these terms.
             </p>
           </div>
 
@@ -63,14 +63,14 @@ export default function TermsOfService() {
                 </h2>
                 <div className="space-y-3 text-slate-600">
                   <p>
-                    By creating an account and using Autopin, you accept and agree to be bound by 
+                    By creating an account and using Pinflow, you accept and agree to be bound by 
                     these Terms of Service and our Privacy Policy. If you do not agree to these 
                     terms, please do not use our service.
                   </p>
-                  <div className="bg-gradient-to-br from-orange-50 to-rose-50 rounded-lg p-4 border border-orange-100">
+                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
                     <p className="text-sm">
                       <strong className="text-slate-900">Important:</strong> You must be at least 
-                      18 years old to use Autopin. By using our service, you represent that you 
+                      18 years old to use Pinflow. By using our service, you represent that you 
                       meet this age requirement.
                     </p>
                   </div>
@@ -82,7 +82,7 @@ export default function TermsOfService() {
           {/* Section 2 */}
           <section>
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center flex-shrink-0">
                 <Zap size={20} />
               </div>
               <div className="flex-1">
@@ -91,7 +91,7 @@ export default function TermsOfService() {
                 </h2>
                 <div className="space-y-3 text-slate-600">
                   <p>
-                    Autopin is a Pinterest automation platform that allows you to:
+                    Pinflow is a Pinterest automation platform that allows you to:
                   </p>
                   <div className="grid md:grid-cols-2 gap-3">
                     <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
@@ -132,12 +132,12 @@ export default function TermsOfService() {
                 </h2>
                 <div className="space-y-4 text-slate-600">
                   <p>
-                    When using Autopin, you agree to the following responsibilities:
+                    When using Pinflow, you agree to the following responsibilities:
                   </p>
                   
                   <div className="space-y-3">
                     <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                      <div className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</div>
+                      <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</div>
                       <div>
                         <p className="font-medium text-slate-900 mb-1">Provide Accurate Information</p>
                         <p className="text-sm">You must provide accurate and complete information when creating your account and keep it up to date.</p>
@@ -145,7 +145,7 @@ export default function TermsOfService() {
                     </div>
 
                     <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                      <div className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</div>
+                      <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</div>
                       <div>
                         <p className="font-medium text-slate-900 mb-1">Maintain Account Security</p>
                         <p className="text-sm">You are responsible for maintaining the confidentiality of your account credentials and all activities under your account.</p>
@@ -153,35 +153,20 @@ export default function TermsOfService() {
                     </div>
 
                     <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                      <div className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</div>
+                      <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</div>
                       <div>
                         <p className="font-medium text-slate-900 mb-1">Comply with Pinterest's Terms</p>
-                        <p className="text-sm">You must comply with Pinterest's Terms of Service, Community Guidelines, and all applicable laws.</p>
+                        <p className="text-sm">You must comply with Pinterest's Terms of Service and Community Guidelines when using our service.</p>
                       </div>
                     </div>
 
                     <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                      <div className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">4</div>
+                      <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">4</div>
                       <div>
-                        <p className="font-medium text-slate-900 mb-1">Use Service Legally</p>
-                        <p className="text-sm">You must not use the service for any illegal, harmful, or unauthorized purposes.</p>
+                        <p className="font-medium text-slate-900 mb-1">Use Service Appropriately</p>
+                        <p className="text-sm">You may not use our service for any illegal or unauthorized purpose, including spamming or violating intellectual property rights.</p>
                       </div>
                     </div>
-
-                    <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                      <div className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">5</div>
-                      <div>
-                        <p className="font-medium text-slate-900 mb-1">No Spam or Inappropriate Content</p>
-                        <p className="text-sm">You must not publish spam, misleading, or inappropriate content through our platform.</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <p className="text-sm text-red-900">
-                      <strong>Warning:</strong> Violation of these responsibilities may result in 
-                      immediate suspension or termination of your account.
-                    </p>
                   </div>
                 </div>
               </div>
@@ -191,45 +176,45 @@ export default function TermsOfService() {
           {/* Section 4 */}
           <section>
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2c5.514 0 10 4.486 10 10s-4.486 10-10 10S2 17.514 2 12 6.486 2 12 2zm5 7h-4V5h-2v4H7v2h4v4h2v-4h4V9z"/>
-                </svg>
+              <div className="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center flex-shrink-0">
+                <Shield size={20} />
               </div>
               <div className="flex-1">
                 <h2 className="text-2xl font-semibold text-slate-900 mb-3">
-                  4. Pinterest Integration
+                  4. Prohibited Activities
                 </h2>
                 <div className="space-y-3 text-slate-600">
                   <p>
-                    By connecting your Pinterest account to Autopin, you authorize us to access 
-                    and manage your Pinterest content on your behalf.
+                    You may not use Pinflow to:
                   </p>
-                  <div className="bg-gradient-to-br from-rose-50 to-orange-50 rounded-lg p-5 border border-rose-100">
-                    <p className="font-semibold text-slate-900 mb-3">What this means:</p>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-start gap-2">
-                        <span className="text-rose-500 mt-1">•</span>
-                        <span>We will create, edit, and delete pins on your behalf based on your instructions</span>
+                        <span className="text-red-500 mt-1">✗</span>
+                        <span>Violate any laws or regulations</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <span className="text-rose-500 mt-1">•</span>
-                        <span>We will access your boards and basic profile information</span>
+                        <span className="text-red-500 mt-1">✗</span>
+                        <span>Infringe on intellectual property rights</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <span className="text-rose-500 mt-1">•</span>
-                        <span>We will not perform any actions without your explicit scheduling or approval</span>
+                        <span className="text-red-500 mt-1">✗</span>
+                        <span>Distribute spam, malware, or harmful content</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <span className="text-rose-500 mt-1">•</span>
-                        <span>You remain fully responsible for all content published through our service</span>
+                        <span className="text-red-500 mt-1">✗</span>
+                        <span>Attempt to gain unauthorized access to our systems</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500 mt-1">✗</span>
+                        <span>Resell or redistribute our service without permission</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500 mt-1">✗</span>
+                        <span>Use automated tools to scrape or harvest data</span>
                       </li>
                     </ul>
                   </div>
-                  <p className="text-sm">
-                    You can disconnect your Pinterest account at any time through your Autopin 
-                    account settings.
-                  </p>
                 </div>
               </div>
             </div>
@@ -239,46 +224,33 @@ export default function TermsOfService() {
           <section>
             <div className="flex items-start gap-4 mb-4">
               <div className="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center flex-shrink-0">
-                <Shield size={20} />
+                <FileText size={20} />
               </div>
               <div className="flex-1">
                 <h2 className="text-2xl font-semibold text-slate-900 mb-3">
-                  5. Limitation of Liability
+                  5. Intellectual Property
                 </h2>
                 <div className="space-y-3 text-slate-600">
                   <p>
-                    Autopin is provided "as is" without warranties of any kind, either express 
-                    or implied.
+                    All content, features, and functionality of Pinflow are owned by us and are 
+                    protected by copyright, trademark, and other intellectual property laws.
                   </p>
-                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-5">
-                    <p className="font-medium text-slate-900 mb-3">We are not liable for:</p>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex items-start gap-2">
-                        <span className="text-rose-500 mt-1">×</span>
-                        <span>Any damages arising from your use or inability to use the service</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-rose-500 mt-1">×</span>
-                        <span>Loss of data, profits, or business opportunities</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-rose-500 mt-1">×</span>
-                        <span>Actions taken by Pinterest in response to content published through our service</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-rose-500 mt-1">×</span>
-                        <span>Service interruptions, bugs, or technical issues</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-rose-500 mt-1">×</span>
-                        <span>Third-party actions or content</span>
-                      </li>
-                    </ul>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="p-4 border border-slate-200 rounded-lg">
+                      <p className="font-medium text-slate-900 text-sm mb-1">Your Content</p>
+                      <p className="text-xs text-slate-600">
+                        You retain all rights to the content you create and upload. By using 
+                        our service, you grant us permission to store and display your content.
+                      </p>
+                    </div>
+                    <div className="p-4 border border-slate-200 rounded-lg">
+                      <p className="font-medium text-slate-900 text-sm mb-1">Our Platform</p>
+                      <p className="text-xs text-slate-600">
+                        You may not copy, modify, distribute, or create derivative works from 
+                        our platform without written permission.
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-sm">
-                    To the maximum extent permitted by law, our total liability shall not exceed 
-                    the amount you paid us in the past 12 months.
-                  </p>
                 </div>
               </div>
             </div>
@@ -287,7 +259,7 @@ export default function TermsOfService() {
           {/* Section 6 */}
           <section>
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center flex-shrink-0">
                 <XCircle size={20} />
               </div>
               <div className="flex-1">
@@ -343,20 +315,20 @@ export default function TermsOfService() {
                   </p>
                   <ul className="space-y-2">
                     <li className="flex items-start gap-3">
-                      <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">✓</span>
+                      <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">✓</span>
                       <span>Update the "Last updated" date at the top of this page</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">✓</span>
+                      <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">✓</span>
                       <span>Notify you via email if the changes are significant</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">✓</span>
-                      <span>Post a notice in the Autopin dashboard</span>
+                      <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">✓</span>
+                      <span>Post a notice in the Pinflow dashboard</span>
                     </li>
                   </ul>
                   <p className="text-sm">
-                    Your continued use of Autopin after changes are posted constitutes your 
+                    Your continued use of Pinflow after changes are posted constitutes your 
                     acceptance of the updated terms.
                   </p>
                 </div>
@@ -367,7 +339,7 @@ export default function TermsOfService() {
           {/* Section 8 */}
           <section>
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center flex-shrink-0">
                 <Mail size={20} />
               </div>
               <div className="flex-1">
@@ -384,7 +356,7 @@ export default function TermsOfService() {
                     </p>
                     <a 
                       href="mailto:support@arjumedia.com" 
-                      className="inline-flex items-center gap-2 text-rose-600 hover:text-rose-700 font-medium transition-colors"
+                      className="inline-flex items-center gap-2 text-orange-600 hover:text-orange-700 font-medium transition-colors"
                     >
                       <Mail size={18} />
                       support@arjumedia.com
@@ -405,7 +377,7 @@ export default function TermsOfService() {
             </h3>
             <p className="text-slate-600 text-sm leading-relaxed">
               These Terms shall be governed by and construed in accordance with applicable laws. 
-              Any disputes arising from these terms or your use of Autopin shall be resolved 
+              Any disputes arising from these terms or your use of Pinflow shall be resolved 
               through binding arbitration, except where prohibited by law.
             </p>
           </section>
@@ -420,7 +392,7 @@ export default function TermsOfService() {
             Ready to get started?
           </h3>
           <p className="text-slate-300 mb-6">
-            Join Autopin and automate your Pinterest workflow today
+            Join Pinflow and automate your Pinterest workflow today
           </p>
           <button
             onClick={() => router.push('/')}

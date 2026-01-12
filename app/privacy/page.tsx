@@ -22,9 +22,9 @@ export default function PrivacyPolicy() {
       </header>
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-rose-50 to-orange-50 border-b border-slate-200">
+      <div className="bg-gradient-to-br from-orange-50 to-orange-100 border-b border-slate-200">
         <div className="max-w-4xl mx-auto px-6 py-16 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-500 to-orange-500 text-white mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-400 text-white mb-6">
             <Shield size={32} strokeWidth={1.5} />
           </div>
           <h1 className="text-4xl md:text-5xl font-semibold text-slate-900 mb-4">
@@ -34,7 +34,7 @@ export default function PrivacyPolicy() {
             Your privacy is important to us
           </p>
           <p className="text-sm text-slate-500">
-            Last updated: January 7, 2026
+            Last updated: January 12, 2026
           </p>
         </div>
       </div>
@@ -46,7 +46,7 @@ export default function PrivacyPolicy() {
           {/* Introduction */}
           <div className="prose prose-slate max-w-none">
             <p className="text-lg text-slate-600 leading-relaxed">
-              At Autopin, we take your privacy seriously. This Privacy Policy explains how we collect, 
+              At Pinflow, we take your privacy seriously. This Privacy Policy explains how we collect, 
               use, disclose, and safeguard your information when you use our Pinterest automation service.
             </p>
           </div>
@@ -54,7 +54,7 @@ export default function PrivacyPolicy() {
           {/* Section 1 */}
           <section>
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center flex-shrink-0">
                 <Database size={20} />
               </div>
               <div className="flex-1">
@@ -70,19 +70,19 @@ export default function PrivacyPolicy() {
                     <p className="font-medium text-slate-900 mb-2">This includes:</p>
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-start gap-2">
-                        <span className="text-rose-500 mt-1">•</span>
+                        <span className="text-orange-500 mt-1">•</span>
                         <span>Account information (name, email address)</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <span className="text-rose-500 mt-1">•</span>
+                        <span className="text-orange-500 mt-1">•</span>
                         <span>Pinterest account connection data</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <span className="text-rose-500 mt-1">•</span>
+                        <span className="text-orange-500 mt-1">•</span>
                         <span>Content you create or upload (pins, images, descriptions)</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <span className="text-rose-500 mt-1">•</span>
+                        <span className="text-orange-500 mt-1">•</span>
                         <span>Usage data and analytics</span>
                       </li>
                     </ul>
@@ -107,23 +107,23 @@ export default function PrivacyPolicy() {
                 </p>
                 <ul className="space-y-2 text-slate-600">
                   <li className="flex items-start gap-3">
-                    <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">✓</span>
+                    <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">✓</span>
                     <span>Provide, maintain, and improve our services</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">✓</span>
+                    <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">✓</span>
                     <span>Schedule and publish pins to your Pinterest account as instructed</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">✓</span>
+                    <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">✓</span>
                     <span>Send you technical notices, updates, and support messages</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">✓</span>
+                    <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">✓</span>
                     <span>Monitor and analyze trends, usage, and activities</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">✓</span>
+                    <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">✓</span>
                     <span>Detect, prevent, and address technical issues</span>
                   </li>
                 </ul>
@@ -134,7 +134,7 @@ export default function PrivacyPolicy() {
           {/* Section 3 */}
           <section>
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center flex-shrink-0">
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2c5.514 0 10 4.486 10 10s-4.486 10-10 10S2 17.514 2 12 6.486 2 12 2zm5 7h-4V5h-2v4H7v2h4v4h2v-4h4V9z"/>
                 </svg>
@@ -149,19 +149,27 @@ export default function PrivacyPolicy() {
                     the official Pinterest API. We take this access seriously and implement strict 
                     security measures.
                   </p>
-                  <div className="bg-gradient-to-br from-rose-50 to-orange-50 rounded-lg p-5 border border-rose-100">
+                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-5 border border-orange-200">
                     <p className="font-semibold text-slate-900 mb-2">What we access:</p>
-                    <p className="text-sm">
-                      We only access the permissions you explicitly grant us, including the ability 
-                      to create pins, access your boards, and view basic profile information. We 
-                      never access your private messages or personal data beyond what's necessary 
-                      to provide our service.
-                    </p>
+                    <ul className="space-y-2 text-sm">
+                      <li className="flex items-start gap-2">
+                        <span className="text-orange-500 mt-1">•</span>
+                        <span>Your Pinterest boards and pins</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-orange-500 mt-1">•</span>
+                        <span>Basic account information (username, profile picture)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-orange-500 mt-1">•</span>
+                        <span>Analytics data for your pins and boards</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-orange-500 mt-1">•</span>
+                        <span>Permission to create and schedule pins</span>
+                      </li>
+                    </ul>
                   </div>
-                  <p className="text-sm">
-                    You can revoke our access to your Pinterest account at any time through your 
-                    Pinterest account settings or by disconnecting within Autopin.
-                  </p>
                 </div>
               </div>
             </div>
@@ -175,29 +183,28 @@ export default function PrivacyPolicy() {
               </div>
               <div className="flex-1">
                 <h2 className="text-2xl font-semibold text-slate-900 mb-3">
-                  4. Data Storage & Security
+                  4. Data Security
                 </h2>
                 <div className="space-y-3 text-slate-600">
                   <p>
-                    Your data is stored securely using Supabase, a trusted database provider 
-                    with enterprise-grade security measures.
+                    We use industry-standard security measures to protect your personal information:
                   </p>
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid md:grid-cols-2 gap-3">
                     <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
                       <p className="font-medium text-slate-900 text-sm mb-1">Encryption</p>
-                      <p className="text-xs text-slate-600">All data is encrypted in transit and at rest</p>
+                      <p className="text-xs text-slate-600">All data transmitted is encrypted using SSL/TLS</p>
+                    </div>
+                    <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                      <p className="font-medium text-slate-900 text-sm mb-1">Secure Storage</p>
+                      <p className="text-xs text-slate-600">Data stored in secure, encrypted databases</p>
                     </div>
                     <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
                       <p className="font-medium text-slate-900 text-sm mb-1">Access Control</p>
-                      <p className="text-xs text-slate-600">Strict authentication and authorization</p>
+                      <p className="text-xs text-slate-600">Limited access to personal information</p>
                     </div>
                     <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                      <p className="font-medium text-slate-900 text-sm mb-1">Monitoring</p>
-                      <p className="text-xs text-slate-600">24/7 security monitoring and alerts</p>
-                    </div>
-                    <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                      <p className="font-medium text-slate-900 text-sm mb-1">Backups</p>
-                      <p className="text-xs text-slate-600">Regular automated backups</p>
+                      <p className="font-medium text-slate-900 text-sm mb-1">Regular Audits</p>
+                      <p className="text-xs text-slate-600">Continuous security monitoring and updates</p>
                     </div>
                   </div>
                 </div>
@@ -208,7 +215,7 @@ export default function PrivacyPolicy() {
           {/* Section 5 */}
           <section>
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center flex-shrink-0">
                 <Users size={20} />
               </div>
               <div className="flex-1">
@@ -229,15 +236,15 @@ export default function PrivacyPolicy() {
                   </p>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-start gap-2">
-                      <span className="text-rose-500 mt-1">•</span>
+                      <span className="text-orange-500 mt-1">•</span>
                       <span><strong>With Pinterest:</strong> To provide our core service of scheduling and publishing pins</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-rose-500 mt-1">•</span>
+                      <span className="text-orange-500 mt-1">•</span>
                       <span><strong>Service Providers:</strong> Trusted partners who help us operate our service (e.g., hosting, analytics)</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-rose-500 mt-1">•</span>
+                      <span className="text-orange-500 mt-1">•</span>
                       <span><strong>Legal Requirements:</strong> When required by law or to protect our legal rights</span>
                     </li>
                   </ul>
@@ -263,19 +270,19 @@ export default function PrivacyPolicy() {
                     You have full control over your personal information. You have the right to:
                   </p>
                   <div className="grid md:grid-cols-2 gap-3">
-                    <div className="p-4 border border-slate-200 rounded-lg hover:border-rose-200 transition-colors">
+                    <div className="p-4 border border-slate-200 rounded-lg hover:border-orange-200 transition-colors">
                       <p className="font-medium text-slate-900 text-sm mb-1">Access Your Data</p>
                       <p className="text-xs text-slate-600">View all personal information we store</p>
                     </div>
-                    <div className="p-4 border border-slate-200 rounded-lg hover:border-rose-200 transition-colors">
+                    <div className="p-4 border border-slate-200 rounded-lg hover:border-orange-200 transition-colors">
                       <p className="font-medium text-slate-900 text-sm mb-1">Update Information</p>
                       <p className="text-xs text-slate-600">Modify your account details anytime</p>
                     </div>
-                    <div className="p-4 border border-slate-200 rounded-lg hover:border-rose-200 transition-colors">
+                    <div className="p-4 border border-slate-200 rounded-lg hover:border-orange-200 transition-colors">
                       <p className="font-medium text-slate-900 text-sm mb-1">Delete Your Account</p>
                       <p className="text-xs text-slate-600">Permanently remove all your data</p>
                     </div>
-                    <div className="p-4 border border-slate-200 rounded-lg hover:border-rose-200 transition-colors">
+                    <div className="p-4 border border-slate-200 rounded-lg hover:border-orange-200 transition-colors">
                       <p className="font-medium text-slate-900 text-sm mb-1">Export Your Data</p>
                       <p className="text-xs text-slate-600">Download all your information</p>
                     </div>
@@ -292,7 +299,7 @@ export default function PrivacyPolicy() {
           {/* Section 7 */}
           <section>
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center flex-shrink-0">
                 <Mail size={20} />
               </div>
               <div className="flex-1">
@@ -310,7 +317,7 @@ export default function PrivacyPolicy() {
                     </p>
                     <a 
                       href="mailto:support@arjumedia.com" 
-                      className="inline-flex items-center gap-2 text-rose-600 hover:text-rose-700 font-medium transition-colors"
+                      className="inline-flex items-center gap-2 text-orange-600 hover:text-orange-700 font-medium transition-colors"
                     >
                       <Mail size={18} />
                       support@arjumedia.com
@@ -348,7 +355,7 @@ export default function PrivacyPolicy() {
             Ready to automate your Pinterest?
           </h3>
           <p className="text-slate-300 mb-6">
-            Join thousands of creators using Autopin
+            Join thousands of creators using Pinflow
           </p>
           <button
             onClick={() => router.push('/')}
