@@ -3,6 +3,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 // Pinterest Connection
 export async function connectPinterest(userId: string) {
+  // Редиректим напрямую на backend OAuth endpoint
   window.location.href = `${API_URL}/auth/pinterest?user_id=${userId}`;
 }
 
