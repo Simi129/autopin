@@ -1,6 +1,6 @@
 'use client';
 
-import { Aperture } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';
@@ -15,9 +15,9 @@ const sizeClasses = {
 };
 
 const iconSizes = {
-  sm: 16,
-  md: 20,
-  lg: 24,
+  sm: 14,
+  md: 18,
+  lg: 22,
 };
 
 const textSizes = {
@@ -31,12 +31,12 @@ export default function Logo({ size = 'md', showText = true, onClick }: LogoProp
 
   return (
     <div className={`flex items-center gap-2 ${logoClasses}`} onClick={onClick}>
-      <div className={`${sizeClasses[size]} bg-gradient-to-tr from-rose-500 to-orange-400 rounded-lg flex items-center justify-center text-white`}>
-        <Aperture size={iconSizes[size]} strokeWidth={1.5} />
+      <div className={`${sizeClasses[size]} bg-gradient-to-br from-orange-500 to-orange-400 rounded-lg flex items-center justify-center text-white shadow-sm`}>
+        <TrendingUp size={iconSizes[size]} strokeWidth={2.5} />
       </div>
       {showText && (
         <span className={`${textSizes[size]} font-semibold tracking-tight text-slate-900`}>
-          AUTOPIN
+          Pinflow
         </span>
       )}
     </div>

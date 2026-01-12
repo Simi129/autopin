@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AUTOPIN - Pinterest Automation & Analytics SaaS",
+  title: "Pinflow - Pinterest Automation & Analytics SaaS",
   description: "The all-in-one platform to schedule pins, analyze trends, and grow your audience on Pinterest without the manual grind.",
   icons: {
     icon: '/favicon.ico',
