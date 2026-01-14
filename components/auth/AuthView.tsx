@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { AuthFormData } from '@/lib/types';
 import { ArrowLeft, Mail, Lock, User } from 'lucide-react';
 import Logo from '@/components/shared/Logo';
+import Alert from '@/components/shared/Alert';
 
 export default function AuthView() {
   const router = useRouter();
@@ -20,7 +22,7 @@ export default function AuthView() {
     full_name: '',
   });
 
-  // ÐŸÑ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼ ÐµÑÐ»Ð¸ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒ ÑƒÐ¶Ðµ Ð°Ð²Ñ‚Ð¾Ñ€Ð¸Ð·Ð¾Ð²Ð°Ð½ Ð¿Ñ€Ð¸ Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐµ
+  // Проверяем если пользователь уже авторизован при загрузке
   useEffect(() => {
     checkUser();
   }, []);
@@ -52,19 +54,17 @@ export default function AuthView() {
             data: {
               full_name: formData.full_name,
             },
-            // Ð’ÐÐ–ÐÐž: redirect Ð½Ð° /dashboard, ÐÐ• Ð½Ð° /login!
-            // Supabase ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ cookies, Ð¿Ð¾Ñ‚Ð¾Ð¼ Ñ€ÐµÐ´Ð¸Ñ€ÐµÐºÑ‚Ð½ÐµÑ‚ ÑÑŽÐ´Ð°
             emailRedirectTo: `${window.location.origin}/auth/callback`,
           },
         });
 
         if (signUpError) throw signUpError;
 
-        // Ð•ÑÐ»Ð¸ ÑÐµÑÑÐ¸Ñ ÑÐ¾Ð·Ð´Ð°Ð½Ð° ÑÑ€Ð°Ð·Ñƒ (autoConfirm enabled)
+        // Если сессия создана сразу (autoConfirm enabled)
         if (data.session) {
           router.push('/dashboard');
         } else if (data.user && !data.session) {
-          // Ð¢Ñ€ÐµÐ±ÑƒÐµÑ‚ÑÑ Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½Ð¸Ðµ email
+          // Требуется подтверждение email
           setSuccess('Check your email for the confirmation link!');
         }
       } else {
@@ -91,7 +91,7 @@ export default function AuthView() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: `${window.location.origin}/auth/callback`,
         },
       });
       if (error) throw error;
@@ -131,15 +131,25 @@ export default function AuthView() {
             </p>
           </div>
 
-          {/* Error/Success Messages */}
+          {/* Alert Messages */}
           {error && (
-            <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-              {error}
+            <div className="mb-6">
+              <Alert 
+                variant="error" 
+                message={error}
+                onClose={() => setError(null)}
+                autoClose
+              />
             </div>
           )}
           {success && (
-            <div className="mb-6 p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm">
-              {success}
+            <div className="mb-6">
+              <Alert 
+                variant="success" 
+                message={success}
+                onClose={() => setSuccess(null)}
+                autoClose
+              />
             </div>
           )}
 
@@ -184,9 +194,19 @@ export default function AuthView() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-slate-700">
+                  Password
+                </label>
+                {!isSignUp && (
+                  <Link 
+                    href="/forgot-password"
+                    className="text-sm text-rose-600 hover:text-rose-700 font-medium transition-colors"
+                  >
+                    Forgot password?
+                  </Link>
+                )}
+              </div>
               <div className="relative">
                 <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
@@ -194,7 +214,7 @@ export default function AuthView() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                  placeholder="Enter your password"
                   className="w-full pl-12 pr-4 py-3 rounded-lg border border-slate-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-100 outline-none transition-all"
                   required
                   minLength={6}
