@@ -5,6 +5,13 @@ import { supabase } from '@/lib/supabase';
 import { getBoards, publishNow, schedulePost, getPinterestStatus } from '@/lib/api';
 import { Calendar, Image as ImageIcon, Loader2, Plus, Upload, X, Link as LinkIcon, Tag } from 'lucide-react';
 import CreateBoardModal from './CreateBoardModal';
+import Alert from '@/components/shared/Alert';
+
+type AlertType = {
+  variant: 'success' | 'error' | 'warning' | 'info';
+  title?: string;
+  message: string;
+};
 
 export default function CreatePinForm() {
   const [user, setUser] = useState<any>(null);
@@ -17,6 +24,7 @@ export default function CreatePinForm() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadMethod, setUploadMethod] = useState<'url' | 'upload'>('url');
   const [keywordInput, setKeywordInput] = useState('');
+  const [alert, setAlert] = useState<AlertType | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState({
@@ -26,7 +34,7 @@ export default function CreatePinForm() {
     description: '',
     link: '',
     scheduled_at: '',
-    keywords: [] as string[], // Добавили ключевые слова
+    keywords: [] as string[],
   });
 
   useEffect(() => {
@@ -69,12 +77,20 @@ export default function CreatePinForm() {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
+      setAlert({
+        variant: 'error',
+        title: 'Invalid File Type',
+        message: 'Please select an image file (PNG, JPG, WEBP).',
+      });
       return;
     }
 
     if (file.size > 32 * 1024 * 1024) {
-      alert('Image size must be less than 32MB');
+      setAlert({
+        variant: 'error',
+        title: 'File Too Large',
+        message: 'Image size must be less than 32MB. Please choose a smaller file.',
+      });
       return;
     }
 
@@ -126,9 +142,18 @@ export default function CreatePinForm() {
       // Устанавливаем URL в форму
       setFormData({ ...formData, image_url: publicUrl });
       
+      setAlert({
+        variant: 'success',
+        message: 'Image uploaded successfully to cloud storage!',
+      });
+      
     } catch (error) {
       console.error('Error uploading image:', error);
-      alert('Failed to upload image. Please try using an image URL instead.');
+      setAlert({
+        variant: 'error',
+        title: 'Upload Failed',
+        message: 'Failed to upload image. Please try using an image URL instead.',
+      });
       setImagePreview(null);
     } finally {
       setUploading(false);
@@ -143,7 +168,6 @@ export default function CreatePinForm() {
     }
   };
 
-  // Функции для работы с ключевыми словами
   const handleAddKeyword = () => {
     const keyword = keywordInput.trim();
     if (keyword && !formData.keywords.includes(keyword)) {
@@ -166,17 +190,29 @@ export default function CreatePinForm() {
     e.preventDefault();
     
     if (!user || !formData.board_id || !formData.title) {
-      alert('Please fill in all required fields');
+      setAlert({
+        variant: 'warning',
+        title: 'Missing Information',
+        message: 'Please fill in all required fields (Board and Title).',
+      });
       return;
     }
 
     if (!formData.image_url) {
-      alert('Please provide an image (URL or upload)');
+      setAlert({
+        variant: 'warning',
+        title: 'Image Required',
+        message: 'Please provide an image URL or upload an image.',
+      });
       return;
     }
 
     if (action === 'schedule' && !formData.scheduled_at) {
-      alert('Please select a date and time for scheduling');
+      setAlert({
+        variant: 'warning',
+        title: 'Schedule Time Required',
+        message: 'Please select a date and time for scheduling.',
+      });
       return;
     }
 
@@ -189,18 +225,26 @@ export default function CreatePinForm() {
         title: formData.title,
         description: formData.description,
         link: formData.link || undefined,
-        keywords: formData.keywords.length > 0 ? formData.keywords : undefined, // Добавили keywords
+        keywords: formData.keywords.length > 0 ? formData.keywords : undefined,
       };
 
       if (action === 'now') {
         await publishNow(postData);
-        alert('Pin published successfully! 🎉');
+        setAlert({
+          variant: 'success',
+          title: 'Pin Published! 🎉',
+          message: 'Your pin has been successfully published to Pinterest.',
+        });
       } else {
         await schedulePost({
           ...postData,
           scheduled_at: new Date(formData.scheduled_at).toISOString(),
         });
-        alert('Pin scheduled successfully! 📅');
+        setAlert({
+          variant: 'success',
+          title: 'Pin Scheduled! 📅',
+          message: `Your pin will be automatically published on ${new Date(formData.scheduled_at).toLocaleString()}.`,
+        });
       }
 
       // Reset form
@@ -220,7 +264,11 @@ export default function CreatePinForm() {
       }
     } catch (error) {
       console.error('Error publishing/scheduling pin:', error);
-      alert('Failed to publish/schedule pin. Please try again.');
+      setAlert({
+        variant: 'error',
+        title: 'Operation Failed',
+        message: 'Failed to publish/schedule pin. Please try again or contact support.',
+      });
     } finally {
       setLoading(false);
     }
@@ -229,58 +277,78 @@ export default function CreatePinForm() {
   if (!pinterestConnected) {
     return (
       <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
-        <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
-          <ImageIcon className="w-8 h-8 text-slate-400" />
+        <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-rose-600" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/>
+          </svg>
         </div>
         <h3 className="text-lg font-semibold text-slate-900 mb-2">Connect Pinterest First</h3>
-        <p className="text-slate-500">Please connect your Pinterest account above to start creating pins.</p>
-      </div>
-    );
-  }
-
-  if (loadingBoards) {
-    return (
-      <div className="bg-white rounded-xl border border-slate-200 p-8 flex items-center justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+        <p className="text-slate-600">Please connect your Pinterest account to start creating pins.</p>
       </div>
     );
   }
 
   return (
     <>
-      <div className="bg-white rounded-xl border border-slate-200 p-8">
+      {/* Alert Notifications */}
+      {alert && (
+        <div className="mb-6">
+          <Alert
+            variant={alert.variant}
+            title={alert.title}
+            message={alert.message}
+            onClose={() => setAlert(null)}
+            autoClose
+            autoCloseDelay={6000}
+          />
+        </div>
+      )}
+
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-slate-900">Create New Pin</h2>
+          <button
+            onClick={() => setShowCreateBoardModal(true)}
+            className="px-4 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <Plus size={16} />
+            New Board
+          </button>
+        </div>
+
         <form className="space-y-6">
           {/* Board Selection */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Select Board <span className="text-rose-500">*</span>
+              Board <span className="text-rose-500">*</span>
             </label>
-            <div className="flex gap-2">
+            {loadingBoards ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+                <span className="ml-2 text-sm text-slate-500">Loading boards...</span>
+              </div>
+            ) : boards.length === 0 ? (
+              <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <p className="text-sm text-slate-600">No boards found. Create your first board to get started!</p>
+              </div>
+            ) : (
               <select
                 value={formData.board_id}
                 onChange={(e) => setFormData({ ...formData, board_id: e.target.value })}
-                className="flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
                 required
               >
-                <option value="">Choose a board...</option>
+                <option value="">Select a board</option>
                 {boards.map((board) => (
                   <option key={board.id} value={board.id}>
                     {board.name}
                   </option>
                 ))}
               </select>
-              <button
-                type="button"
-                onClick={() => setShowCreateBoardModal(true)}
-                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2 font-medium"
-              >
-                <Plus size={16} />
-                New
-              </button>
-            </div>
+            )}
           </div>
 
-          {/* Image Upload Method */}
+          {/* Image Upload Method Toggle */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
               Image <span className="text-rose-500">*</span>
@@ -288,46 +356,57 @@ export default function CreatePinForm() {
             <div className="flex gap-2 mb-3">
               <button
                 type="button"
-                onClick={() => {
-                  setUploadMethod('url');
-                  setImagePreview(null);
-                }}
-                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                onClick={() => setUploadMethod('url')}
+                className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
                   uploadMethod === 'url'
-                    ? 'bg-rose-50 text-rose-600 border-2 border-rose-500'
-                    : 'bg-slate-50 text-slate-600 border-2 border-slate-200'
+                    ? 'bg-rose-600 text-white'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                 }`}
               >
-                <LinkIcon size={16} />
+                <LinkIcon className="w-4 h-4 inline mr-2" />
                 Image URL
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  setUploadMethod('upload');
-                  setFormData({ ...formData, image_url: '' });
-                }}
-                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                onClick={() => setUploadMethod('upload')}
+                className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
                   uploadMethod === 'upload'
-                    ? 'bg-rose-50 text-rose-600 border-2 border-rose-500'
-                    : 'bg-slate-50 text-slate-600 border-2 border-slate-200'
+                    ? 'bg-rose-600 text-white'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                 }`}
               >
-                <Upload size={16} />
+                <Upload className="w-4 h-4 inline mr-2" />
                 Upload File
               </button>
             </div>
 
             {/* Image URL Input */}
             {uploadMethod === 'url' && (
-              <input
-                type="url"
-                value={formData.image_url}
-                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                placeholder="https://example.com/image.jpg"
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
-                required
-              />
+              <div>
+                <input
+                  type="url"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  placeholder="https://example.com/image.jpg"
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  required
+                />
+                {formData.image_url && (
+                  <div className="mt-3">
+                    <img
+                      src={formData.image_url}
+                      alt="Preview"
+                      className="w-full h-56 object-cover rounded-lg"
+                      onError={() => {
+                        setAlert({
+                          variant: 'error',
+                          message: 'Failed to load image from URL. Please check the URL and try again.',
+                        });
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             )}
 
             {/* File Upload */}
@@ -375,11 +454,6 @@ export default function CreatePinForm() {
                     >
                       <X size={16} />
                     </button>
-                    {formData.image_url && (
-                      <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs text-green-700">
-                        ✓ Image uploaded successfully
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
@@ -419,7 +493,7 @@ export default function CreatePinForm() {
             <p className="text-xs text-slate-500 mt-1">{formData.description.length}/500 characters</p>
           </div>
 
-          {/* Keywords Section - НОВОЕ! */}
+          {/* Keywords Section */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
               <Tag className="w-4 h-4 inline mr-1" />

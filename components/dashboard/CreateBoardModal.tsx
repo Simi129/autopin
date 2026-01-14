@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Loader2, Lock, Globe, AlertCircle } from 'lucide-react';
+import { X, Loader2, Lock, Globe } from 'lucide-react';
+import Alert from '@/components/shared/Alert';
 
 interface CreateBoardModalProps {
   isOpen: boolean;
@@ -54,7 +55,6 @@ export default function CreateBoardModal({ isOpen, onClose, onSuccess, userId }:
     } catch (error) {
       console.error('Error creating board:', error);
       
-      // Проверяем тип ошибки
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
       // Специальная обработка для 403 ошибки
@@ -96,22 +96,14 @@ export default function CreateBoardModal({ isOpen, onClose, onSuccess, userId }:
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Error Message */}
+          {/* Error Message with Alert Component */}
           {error && (
-            <div className="p-4 bg-rose-50 border border-rose-200 rounded-lg flex gap-3">
-              <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <p className="text-sm text-rose-800 font-medium">Error</p>
-                <p className="text-sm text-rose-600 mt-1">{error}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setError(null)}
-                className="text-rose-400 hover:text-rose-600"
-              >
-                <X size={16} />
-              </button>
-            </div>
+            <Alert
+              variant="error"
+              title="Error"
+              message={error}
+              onClose={() => setError(null)}
+            />
           )}
 
           {/* Board Name */}

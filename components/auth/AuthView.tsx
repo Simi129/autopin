@@ -20,7 +20,7 @@ export default function AuthView() {
     full_name: '',
   });
 
-  // Проверяем если пользователь уже авторизован при загрузке
+  // ÐŸÑ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼ ÐµÑÐ»Ð¸ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒ ÑƒÐ¶Ðµ Ð°Ð²Ñ‚Ð¾Ñ€Ð¸Ð·Ð¾Ð²Ð°Ð½ Ð¿Ñ€Ð¸ Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐµ
   useEffect(() => {
     checkUser();
   }, []);
@@ -52,19 +52,19 @@ export default function AuthView() {
             data: {
               full_name: formData.full_name,
             },
-            // ВАЖНО: redirect на /dashboard, НЕ на /login!
-            // Supabase установит cookies, потом редиректнет сюда
+            // Ð’ÐÐ–ÐÐž: redirect Ð½Ð° /dashboard, ÐÐ• Ð½Ð° /login!
+            // Supabase ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ cookies, Ð¿Ð¾Ñ‚Ð¾Ð¼ Ñ€ÐµÐ´Ð¸Ñ€ÐµÐºÑ‚Ð½ÐµÑ‚ ÑÑŽÐ´Ð°
             emailRedirectTo: `${window.location.origin}/auth/callback`,
           },
         });
 
         if (signUpError) throw signUpError;
 
-        // Если сессия создана сразу (autoConfirm enabled)
+        // Ð•ÑÐ»Ð¸ ÑÐµÑÑÐ¸Ñ ÑÐ¾Ð·Ð´Ð°Ð½Ð° ÑÑ€Ð°Ð·Ñƒ (autoConfirm enabled)
         if (data.session) {
           router.push('/dashboard');
         } else if (data.user && !data.session) {
-          // Требуется подтверждение email
+          // Ð¢Ñ€ÐµÐ±ÑƒÐµÑ‚ÑÑ Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½Ð¸Ðµ email
           setSuccess('Check your email for the confirmation link!');
         }
       } else {
@@ -194,7 +194,7 @@ export default function AuthView() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="••••••••"
+                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                   className="w-full pl-12 pr-4 py-3 rounded-lg border border-slate-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-100 outline-none transition-all"
                   required
                   minLength={6}
