@@ -6,6 +6,13 @@ import { connectPinterest, getPinterestStatus, disconnectPinterest } from '@/lib
 import { Link2, CheckCircle, Loader2 } from 'lucide-react';
 import Alert from '@/components/shared/Alert';
 
+// Declare dataLayer type for TypeScript
+declare global {
+  interface Window {
+    dataLayer: any[];
+  }
+}
+
 type AlertType = {
   variant: 'success' | 'error' | 'warning' | 'info';
   title?: string;
@@ -59,8 +66,25 @@ export default function PinterestConnect() {
     }
   };
 
+  // Function to push event to GTM dataLayer
+  const pushToDataLayer = (eventName: string, eventData: any = {}) => {
+    if (typeof window !== 'undefined' && window.dataLayer) {
+      window.dataLayer.push({
+        event: eventName,
+        ...eventData
+      });
+      console.log('📊 GTM Event pushed:', eventName, eventData);
+    }
+  };
+
   const handleConnect = () => {
     if (user) {
+      // 🎯 СОБЫТИЕ: Начало подключения Pinterest
+      pushToDataLayer('pinterest_connect_initiated', {
+        user_id: user.id,
+        timestamp: new Date().toISOString()
+      });
+
       connectPinterest(user.id);
     }
   };
@@ -72,6 +96,14 @@ export default function PinterestConnect() {
     try {
       await disconnectPinterest(user.id);
       setPinterestStatus({ connected: false });
+      
+      // 🎯 СОБЫТИЕ: Отключение Pinterest
+      pushToDataLayer('pinterest_disconnect', {
+        user_id: user.id,
+        pinterest_username: pinterestStatus?.pinterest_username || 'unknown',
+        timestamp: new Date().toISOString()
+      });
+
       setAlert({
         variant: 'success',
         message: 'Pinterest account disconnected successfully.',
@@ -87,6 +119,18 @@ export default function PinterestConnect() {
       setDisconnecting(false);
     }
   };
+
+  // Отслеживаем когда Pinterest успешно подключен
+  useEffect(() => {
+    if (pinterestStatus?.connected && user) {
+      // 🎯 СОБЫТИЕ: Успешное подключение Pinterest
+      pushToDataLayer('pinterest_connect_success', {
+        user_id: user.id,
+        pinterest_username: pinterestStatus.pinterest_username,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }, [pinterestStatus?.connected]);
 
   if (loading) {
     return (

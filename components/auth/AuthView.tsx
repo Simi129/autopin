@@ -9,6 +9,13 @@ import { ArrowLeft, Mail, Lock, User } from 'lucide-react';
 import Logo from '@/components/shared/Logo';
 import Alert from '@/components/shared/Alert';
 
+// Declare dataLayer type for TypeScript
+declare global {
+  interface Window {
+    dataLayer: any[];
+  }
+}
+
 export default function AuthView() {
   const router = useRouter();
   const [isSignUp, setIsSignUp] = useState(false);
@@ -39,6 +46,17 @@ export default function AuthView() {
     setError(null);
   };
 
+  // Function to push event to GTM dataLayer
+  const pushToDataLayer = (eventName: string, eventData: any = {}) => {
+    if (typeof window !== 'undefined' && window.dataLayer) {
+      window.dataLayer.push({
+        event: eventName,
+        ...eventData
+      });
+      console.log('📊 GTM Event pushed:', eventName, eventData);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -60,6 +78,15 @@ export default function AuthView() {
 
         if (signUpError) throw signUpError;
 
+        // 🎯 СОБЫТИЕ: Успешная регистрация
+        if (data.user) {
+          pushToDataLayer('user_signup', {
+            user_id: data.user.id,
+            method: 'email',
+            timestamp: new Date().toISOString()
+          });
+        }
+
         // Если сессия создана сразу (autoConfirm enabled)
         if (data.session) {
           router.push('/dashboard');
@@ -75,7 +102,13 @@ export default function AuthView() {
 
         if (signInError) throw signInError;
         
+        // 🎯 СОБЫТИЕ: Успешный вход
         if (data.session) {
+          pushToDataLayer('user_login', {
+            user_id: data.user.id,
+            method: 'email',
+            timestamp: new Date().toISOString()
+          });
           router.push('/dashboard');
         }
       }
@@ -95,6 +128,12 @@ export default function AuthView() {
         },
       });
       if (error) throw error;
+
+      // Событие отправится после успешного редиректа в auth/callback
+      // Можно добавить событие "google_signin_initiated" здесь при необходимости
+      pushToDataLayer('google_signin_initiated', {
+        timestamp: new Date().toISOString()
+      });
     } catch (err: any) {
       setError(err.message);
     }
