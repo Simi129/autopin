@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { ArrowRight, PlayCircle } from 'lucide-react';
+import LeadForm from './LeadForm';
 
 export default function Hero() {
   const router = useRouter();
@@ -15,24 +16,24 @@ export default function Hero() {
         </span>
         New: AI Caption Generator
       </div>
-      
+
       <h1 className="text-5xl md:text-7xl font-semibold text-slate-900 tracking-tight mb-6 leading-[1.1]">
         Automate your inspiration.<br />
         <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-orange-500">
           Scale your revenue.
         </span>
       </h1>
-      
+
       <p className="text-lg text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
         The all-in-one platform to schedule pins, analyze trends, and grow your audience on Pinterest without the manual grind.
       </p>
-      
+
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <button 
-          onClick={() => router.push('/login')} 
+        <button
+          onClick={() => router.push('/login')}
           className="h-12 px-8 rounded-full bg-slate-900 text-white font-medium hover:bg-slate-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-900/20"
         >
-          Get Started 
+          Get Started
           <ArrowRight size={16} strokeWidth={1.5} />
         </button>
         <button className="h-12 px-8 rounded-full bg-white border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
@@ -40,6 +41,9 @@ export default function Hero() {
           Watch Demo
         </button>
       </div>
+
+      {/* Lead Form — под CTA кнопками */}
+      <LeadForm />
     </section>
   );
 }
